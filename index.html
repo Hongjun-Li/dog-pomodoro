@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>双人学习小狗番茄钟 · 云端版</title>
+  <title>双人学习小狗番茄钟</title>
   <style>
     :root{
       --bg:#fff8ef; --panel:#fff; --line:#eadfce; --text:#2c2a27; --muted:#7b746b;
@@ -28,6 +28,23 @@
     button.primary{background:var(--accent);color:#fff;font-weight:700}
     button.green{background:var(--green);color:#fff;font-weight:700}
     button:disabled{opacity:.45;cursor:not-allowed}
+
+    .gate-wrap{min-height:72vh;display:grid;place-items:center}
+    .gate{
+      width:min(440px,100%);background:rgba(255,255,255,.92);border:1px solid var(--line);
+      border-radius:26px;padding:28px;box-shadow:var(--shadow);text-align:center
+    }
+    .gate-dog{font-size:56px;margin-bottom:8px}
+    .gate h2{margin:0 0 8px;font-size:25px}
+    .gate p{margin:0 0 20px;color:var(--muted);font-size:14px;line-height:1.6}
+    .gate .room{display:inline-block;margin-bottom:16px;padding:7px 11px;background:#fff7d8;border:1px solid #f1dfa4;border-radius:999px;font-size:13px}
+    .gate input{
+      width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:13px;outline:none;margin-bottom:10px
+    }
+    .gate input:focus{border-color:var(--accent)}
+    .gate button{width:100%;padding:12px}
+    .gate-error{min-height:20px;margin-top:10px;color:#c44;font-size:13px}
+
     .board{display:grid;grid-template-columns:1fr 1fr;gap:20px}
     .user{background:rgba(255,255,255,.88);border:1px solid var(--line);border-radius:24px;padding:20px;box-shadow:var(--shadow);min-width:0}
     .user-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
@@ -76,12 +93,27 @@
   <div class="topbar">
     <div class="brand">
       <h1>🐾 双人学习小狗番茄钟</h1>
-      <p>房间 DOG2026 · 任务、学习统计和小狗进度保存在 Supabase 云端。</p>
+      <p>房间 DOG2026 · Supabase 云端共享 · Realtime 实时同步</p>
     </div>
-    <div class="status"><span id="statusDot" class="dot"></span><span id="statusText">正在连接云端…</span></div>
+    <div class="status"><span id="statusDot" class="dot"></span><span id="statusText">正在连接…</span></div>
   </div>
-  <div id="board" class="board"><div class="loading">正在读取共享学习房间…</div></div>
-  <div class="footer-note">计时器在当前设备本地运行；任务、完成记录、统计和设置会同步到云端。</div>
+
+  <div id="gate" class="gate-wrap" style="display:none">
+    <div class="gate">
+      <div class="gate-dog">🐶</div>
+      <h2>双人学习空间</h2>
+      <p>这个空间只允许两台已授权设备进入。首次进入请输入共享密码。</p>
+      <div class="room">房间：DOG2026</div>
+      <input id="roomPassword" type="password" autocomplete="current-password"
+             placeholder="输入共享密码"
+             onkeydown="if(event.key==='Enter')joinRoom()">
+      <button id="joinBtn" class="primary" onclick="joinRoom()">进入学习空间</button>
+      <div id="gateError" class="gate-error"></div>
+    </div>
+  </div>
+
+  <div id="board" class="board"><div class="loading">正在检查设备授权…</div></div>
+  <div id="footer" class="footer-note" style="display:none">计时器秒数只保存在当前设备；任务、统计与小狗进度保存在 Supabase 云端。</div>
 </div>
 <div id="toast" class="toast"></div>
 
@@ -97,7 +129,9 @@ const DOGS = [
   ["🐶","豆豆"],["🐕","可可"],["🐩","棉花"],["🦮","布丁"],["🐕‍🦺","星星"],
   ["🐶","团子"],["🐕","麦麦"],["🐩","雪球"],["🦮","柚子"],["🐕‍🦺","露露"]
 ];
+
 let room = null;
+let roomId = null;
 let profiles = [];
 let tasks = [];
 let timers = {};
@@ -113,41 +147,128 @@ function nextRewardText(p){
   const next=(Math.floor((p.completed_sessions||0)/every)+1)*every;
   return `再完成 ${next-(p.completed_sessions||0)} 个专注番茄，即可解锁下一只小狗。`;
 }
-function timerFor(p){
-  if(!timers[p.id]){
-    const key="dog-timer-"+p.id;
-    let saved=null; try{saved=JSON.parse(localStorage.getItem(key))}catch(e){}
-    timers[p.id]=saved||{mode:"focus",remaining:(p.focus_minutes||25)*60,running:false,endAt:null};
-  }
-  return timers[p.id];
-}
-function saveTimer(p){
-  localStorage.setItem("dog-timer-"+p.id,JSON.stringify(timerFor(p)));
-}
 function setStatus(type,text){
   const d=document.getElementById("statusDot"), t=document.getElementById("statusText");
   d.className="dot "+type;t.textContent=text;
 }
-async function loadAll(silent=false){
+function showGate(message=""){
+  document.getElementById("gate").style.display="grid";
+  document.getElementById("board").style.display="none";
+  document.getElementById("footer").style.display="none";
+  document.getElementById("gateError").textContent=message;
+  setStatus("","等待密码");
+}
+function showApp(){
+  document.getElementById("gate").style.display="none";
+  document.getElementById("board").style.display="grid";
+  document.getElementById("footer").style.display="block";
+}
+async function ensureAnonymousSession(){
+  const {data:{session},error}=await db.auth.getSession();
+  if(error) throw error;
+  if(session) return session;
+  const {data,error:signError}=await db.auth.signInAnonymously();
+  if(signError) throw signError;
+  return data.session;
+}
+async function findExistingMembership(){
+  const {data,error}=await db
+    .from("room_members")
+    .select("room_id")
+    .limit(1);
+  if(error) throw error;
+  return data && data.length ? data[0].room_id : null;
+}
+async function joinRoom(){
+  const input=document.getElementById("roomPassword");
+  const btn=document.getElementById("joinBtn");
+  const err=document.getElementById("gateError");
+  const password=input.value.trim();
+  if(!password){err.textContent="请输入共享密码。";return}
+
+  btn.disabled=true;
+  btn.textContent="正在验证…";
+  err.textContent="";
+
   try{
-    const r=await db.from("rooms").select("*").eq("room_code",ROOM_CODE).single();
+    const {data,error}=await db.rpc("join_room",{
+      p_room_code:ROOM_CODE,
+      p_access_token:password
+    });
+    if(error) throw error;
+    roomId=data;
+    input.value="";
+    await loadAll();
+    subscribeRealtime();
+  }catch(e){
+    console.error(e);
+    const msg=String(e.message||e);
+    if(msg.includes("Invalid room password")) err.textContent="密码不正确。";
+    else if(msg.includes("two members")) err.textContent="这个房间已经绑定了两台设备。";
+    else if(msg.includes("Room not found")) err.textContent="找不到这个房间。";
+    else err.textContent="验证失败："+msg;
+  }finally{
+    btn.disabled=false;
+    btn.textContent="进入学习空间";
+  }
+}
+async function boot(){
+  try{
+    setStatus("","正在建立安全会话…");
+    await ensureAnonymousSession();
+
+    const existing=await findExistingMembership();
+    if(existing){
+      roomId=existing;
+      await loadAll();
+      subscribeRealtime();
+    }else{
+      showGate();
+    }
+  }catch(e){
+    console.error(e);
+    setStatus("error","初始化失败");
+    document.getElementById("board").innerHTML=
+      `<div class="loading">初始化失败：${h(e.message||e)}<br><br>请确认 Supabase 已开启 Anonymous Sign-Ins。</div>`;
+  }
+}
+async function loadAll(){
+  try{
+    if(!roomId) throw new Error("没有房间授权");
+
+    const r=await db.from("rooms").select("*").eq("id",roomId).single();
     if(r.error) throw r.error;
     room=r.data;
-    const p=await db.from("profiles").select("*").eq("room_id",room.id).order("slot");
+
+    const p=await db.from("profiles").select("*").eq("room_id",roomId).order("slot");
     if(p.error) throw p.error;
     profiles=p.data||[];
-    const ts=await db.from("tasks").select("*").eq("room_id",room.id).order("created_at",{ascending:false});
+
+    const ts=await db.from("tasks").select("*").eq("room_id",roomId).order("created_at",{ascending:false});
     if(ts.error) throw ts.error;
     tasks=ts.data||[];
-    setStatus("online","云端已连接");
+
+    showApp();
+    setStatus("online","已授权 · 云端已连接");
     render();
   }catch(e){
     console.error(e);
-    setStatus("error","连接失败");
-    if(!silent) document.getElementById("board").innerHTML=`<div class="loading">无法读取 Supabase：${h(e.message||e)}</div>`;
+    setStatus("error","读取失败");
+    document.getElementById("board").style.display="grid";
+    document.getElementById("board").innerHTML=`<div class="loading">无法读取房间数据：${h(e.message||e)}</div>`;
   }
 }
-function userHTML(p,i){
+function timerFor(p){
+  if(!timers[p.id]){
+    const key="dog-timer-"+p.id;
+    let saved=null;
+    try{saved=JSON.parse(localStorage.getItem(key))}catch(e){}
+    timers[p.id]=saved||{mode:"focus",remaining:(p.focus_minutes||25)*60,running:false,endAt:null};
+  }
+  return timers[p.id];
+}
+function saveTimer(p){localStorage.setItem("dog-timer-"+p.id,JSON.stringify(timerFor(p)))}
+function userHTML(p){
   const t=timerFor(p), total=(t.mode==="focus"?(p.focus_minutes||25):(p.break_minutes||5))*60;
   const pct=total?(1-t.remaining/total)*100:0;
   const myTasks=tasks.filter(x=>x.profile_id===p.id);
@@ -157,7 +278,7 @@ function userHTML(p,i){
         <div class="avatar">${h(p.avatar||"🐶")}</div>
         <div class="name-wrap">
           <input value="${h(p.display_name)}" onchange="renameUser('${p.id}',this.value)" aria-label="用户名">
-          <div class="sub">${p.slot==="A"?"左侧用户":"右侧用户"} · Supabase 云端记录</div>
+          <div class="sub">${p.slot==="A"?"左侧用户":"右侧用户"} · 云端共享</div>
         </div>
       </div>
       <button onclick="cycleAvatar('${p.id}')">换头像</button>
@@ -221,15 +342,15 @@ function render(){
 }
 function profileById(id){return profiles.find(x=>x.id===id)}
 async function renameUser(id,value){
-  const v=value.trim(); if(!v)return;
+  const v=value.trim();if(!v)return;
   const {error}=await db.from("profiles").update({display_name:v}).eq("id",id);
-  if(error) toast("修改名字失败："+error.message);
+  if(error)toast("修改名字失败："+error.message);
 }
 async function cycleAvatar(id){
-  const p=profileById(id), icons=["🐶","🐕","🐩","🦮","🐕‍🦺","🐾"];
+  const p=profileById(id),icons=["🐶","🐕","🐩","🦮","🐕‍🦺","🐾"];
   const next=icons[(icons.indexOf(p.avatar)+1+icons.length)%icons.length];
   const {error}=await db.from("profiles").update({avatar:next}).eq("id",id);
-  if(error) toast("修改头像失败："+error.message); else await loadAll(true);
+  if(error)toast("修改头像失败："+error.message);else await loadAll();
 }
 function setMode(id,mode){
   const p=profileById(id),t=timerFor(p);t.running=false;t.endAt=null;t.mode=mode;
@@ -242,7 +363,8 @@ function toggleTimer(id){
   saveTimer(p);render();
 }
 function resetTimer(id){
-  const p=profileById(id),t=timerFor(p);t.running=false;t.endAt=null;t.remaining=(t.mode==="focus"?(p.focus_minutes||25):(p.break_minutes||5))*60;saveTimer(p);render();
+  const p=profileById(id),t=timerFor(p);t.running=false;t.endAt=null;
+  t.remaining=(t.mode==="focus"?(p.focus_minutes||25):(p.break_minutes||5))*60;saveTimer(p);render();
 }
 async function finishNow(id){await completeRound(id)}
 async function completeRound(id){
@@ -261,35 +383,37 @@ async function completeRound(id){
   }else{
     t.mode="focus";t.remaining=(p.focus_minutes||25)*60;toast(`${p.display_name} 休息结束`);
   }
-  saveTimer(p);await loadAll(true);
+  saveTimer(p);await loadAll();
 }
 async function setMinutes(id,key,value){
   const p=profileById(id),max=key==="focus_minutes"?180:60,n=Math.max(1,Math.min(max,parseInt(value)||1));
   const {error}=await db.from("profiles").update({[key]:n}).eq("id",id);
   if(error){toast("设置失败："+error.message);return}
   const t=timerFor(p);
-  if((key==="focus_minutes"&&t.mode==="focus")||(key==="break_minutes"&&t.mode==="break")){t.running=false;t.endAt=null;t.remaining=n*60;saveTimer(p)}
-  await loadAll(true);
+  if((key==="focus_minutes"&&t.mode==="focus")||(key==="break_minutes"&&t.mode==="break")){
+    t.running=false;t.endAt=null;t.remaining=n*60;saveTimer(p)
+  }
+  await loadAll();
 }
 async function setRewardEvery(id,value){
   const n=Math.max(1,Math.min(20,parseInt(value)||1));
   const {error}=await db.from("profiles").update({reward_every:n}).eq("id",id);
-  if(error)toast("设置失败："+error.message);else await loadAll(true);
+  if(error)toast("设置失败："+error.message);else await loadAll();
 }
 async function addTask(profileId){
   const p=profileById(profileId),input=document.getElementById(`task-input-${profileId}`),text=input.value.trim();
   if(!text)return;
   input.value="";
   const {error}=await db.from("tasks").insert({room_id:p.room_id,profile_id:p.id,text});
-  if(error)toast("添加任务失败："+error.message);else await loadAll(true);
+  if(error)toast("添加任务失败："+error.message);else await loadAll();
 }
 async function toggleTask(taskId,completed){
   const {error}=await db.from("tasks").update({completed}).eq("id",taskId);
-  if(error)toast("更新任务失败："+error.message);else await loadAll(true);
+  if(error)toast("更新任务失败："+error.message);else await loadAll();
 }
 async function deleteTask(taskId){
   const {error}=await db.from("tasks").delete().eq("id",taskId);
-  if(error)toast("删除任务失败："+error.message);else await loadAll(true);
+  if(error)toast("删除任务失败："+error.message);else await loadAll();
 }
 function updateDynamic(){
   profiles.forEach(p=>{
@@ -304,22 +428,26 @@ function updateDynamic(){
     }
   });
 }
-function toast(msg){const e=document.getElementById("toast");e.textContent=msg;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),2600)}
+function toast(msg){
+  const e=document.getElementById("toast");e.textContent=msg;e.classList.add("show");
+  setTimeout(()=>e.classList.remove("show"),2600)
+}
 function subscribeRealtime(){
+  if(realtimeChannel) return;
   realtimeChannel=db.channel("dog-room-"+ROOM_CODE)
-    .on("postgres_changes",{event:"*",schema:"public",table:"profiles"},()=>scheduleRefresh())
-    .on("postgres_changes",{event:"*",schema:"public",table:"tasks"},()=>scheduleRefresh())
-    .on("postgres_changes",{event:"*",schema:"public",table:"pomodoro_sessions"},()=>scheduleRefresh())
+    .on("postgres_changes",{event:"*",schema:"public",table:"profiles",filter:`room_id=eq.${roomId}`},()=>scheduleRefresh())
+    .on("postgres_changes",{event:"*",schema:"public",table:"tasks",filter:`room_id=eq.${roomId}`},()=>scheduleRefresh())
+    .on("postgres_changes",{event:"*",schema:"public",table:"pomodoro_sessions",filter:`room_id=eq.${roomId}`},()=>scheduleRefresh())
     .subscribe(status=>{
-      if(status==="SUBSCRIBED")setStatus("online","云端已连接 · 实时同步");
+      if(status==="SUBSCRIBED")setStatus("online","已授权 · 实时同步");
     });
 }
 function scheduleRefresh(){
-  clearTimeout(refreshTimer);refreshTimer=setTimeout(()=>loadAll(true),180);
+  clearTimeout(refreshTimer);refreshTimer=setTimeout(()=>loadAll(),180);
 }
 setInterval(()=>{updateDynamic();profiles.forEach(saveTimer)},250);
-document.addEventListener("visibilitychange",()=>{if(!document.hidden){updateDynamic();loadAll(true)}});
-(async()=>{await loadAll();subscribeRealtime()})();
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&roomId){updateDynamic();loadAll()}});
+boot();
 </script>
 </body>
 </html>
