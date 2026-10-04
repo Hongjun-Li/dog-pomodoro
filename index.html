@@ -6,25 +6,34 @@
   <title>双人学习小狗番茄钟</title>
   <style>
     :root{
-      --bg:#fff8ef; --panel:#fff; --line:#eadfce; --text:#2c2a27; --muted:#7b746b;
-      --accent:#ff9d66; --green:#7fc8a9; --shadow:0 12px 30px rgba(93,70,44,.10);
+      --bg:#fff8ef;
+      --panel:#fff;
+      --line:#eadfce;
+      --text:#2c2a27;
+      --muted:#7b746b;
+      --accent:#ff9d66;
+      --green:#7fc8a9;
+      --shadow:0 12px 30px rgba(93,70,44,.10);
     }
     *{box-sizing:border-box}
     body{
-      margin:0; min-height:100vh; color:var(--text);
+      margin:0;
+      min-height:100vh;
+      color:var(--text);
       font-family:ui-rounded,"SF Pro Rounded","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
       background:
         radial-gradient(circle at 20% 10%,#ffe3cd 0 90px,transparent 91px),
         radial-gradient(circle at 80% 15%,#fff0a8 0 70px,transparent 71px),
         var(--bg);
     }
-    .app{max-width:1400px;margin:auto;padding:28px}
+    .app{max-width:1480px;margin:auto;padding:28px}
     .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}
     .brand h1{margin:0;font-size:28px}
     .brand p{margin:6px 0 0;color:var(--muted);font-size:14px}
     .status{display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid var(--line);border-radius:12px;background:white;font-size:13px}
     .dot{width:9px;height:9px;border-radius:50%;background:#c8c2ba}
-    .dot.online{background:#54b98c}.dot.error{background:#e56b6b}
+    .dot.online{background:#54b98c}
+    .dot.error{background:#e56b6b}
     button,input{font:inherit}
     button{border:0;border-radius:12px;padding:10px 14px;cursor:pointer;background:#f6eee5;color:var(--text)}
     button.primary{background:var(--accent);color:#fff;font-weight:700}
@@ -33,22 +42,39 @@
 
     .gate-wrap{min-height:72vh;display:grid;place-items:center}
     .gate{
-      width:min(440px,100%);background:rgba(255,255,255,.92);border:1px solid var(--line);
-      border-radius:26px;padding:28px;box-shadow:var(--shadow);text-align:center
+      width:min(440px,100%);
+      background:rgba(255,255,255,.92);
+      border:1px solid var(--line);
+      border-radius:26px;
+      padding:28px;
+      box-shadow:var(--shadow);
+      text-align:center
     }
     .gate-dog{font-size:56px;margin-bottom:8px}
     .gate h2{margin:0 0 8px;font-size:25px}
     .gate p{margin:0 0 20px;color:var(--muted);font-size:14px;line-height:1.6}
     .gate .room{display:inline-block;margin-bottom:16px;padding:7px 11px;background:#fff7d8;border:1px solid #f1dfa4;border-radius:999px;font-size:13px}
     .gate input{
-      width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:13px;outline:none;margin-bottom:10px
+      width:100%;
+      padding:13px 14px;
+      border:1px solid var(--line);
+      border-radius:13px;
+      outline:none;
+      margin-bottom:10px
     }
     .gate input:focus{border-color:var(--accent)}
     .gate button{width:100%;padding:12px}
     .gate-error{min-height:20px;margin-top:10px;color:#c44;font-size:13px}
 
     .board{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-    .user{background:rgba(255,255,255,.88);border:1px solid var(--line);border-radius:24px;padding:20px;box-shadow:var(--shadow);min-width:0}
+    .user{
+      background:rgba(255,255,255,.88);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:20px;
+      box-shadow:var(--shadow);
+      min-width:0
+    }
     .user-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
     .identity{display:flex;align-items:center;gap:12px;min-width:0}
     .avatar{width:52px;height:52px;border-radius:18px;display:grid;place-items:center;background:#fff1e7;border:1px solid var(--line);font-size:30px}
@@ -79,14 +105,93 @@
     .task-text{flex:1;min-width:0;overflow-wrap:anywhere}
     .task small{color:var(--muted)}
     .task button{padding:5px 8px;border-radius:8px;font-size:12px}
-    .reward-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
-    .reward-head small{color:var(--muted)}
-    .dog-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:12px}
-    .dog{aspect-ratio:1;border-radius:16px;border:1px solid var(--line);background:#fffaf5;display:grid;place-items:center;position:relative;overflow:hidden}
-    .dog.locked{filter:grayscale(1);opacity:.28}
-    .dog .emoji{font-size:30px}
-    .dog .badge{position:absolute;right:4px;bottom:4px;font-size:9px;background:#2f2d2a;color:#fff;border-radius:8px;padding:2px 5px}
     .milestone{margin-top:10px;padding:10px 12px;border-radius:12px;background:#fff7d8;border:1px solid #f1dfa4;font-size:13px}
+
+    .pet-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+    .pet-tabs button.active{background:#2f2d2a;color:#fff}
+    .pet-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .pet-head small{color:var(--muted)}
+
+    .park-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+    .park-chip{
+      background:#fffaf5;border:1px solid var(--line);padding:10px;border-radius:14px;text-align:center
+    }
+    .park-chip b{display:block;font-size:20px}
+    .park-chip span{font-size:11px;color:var(--muted)}
+
+    .park-scene{
+      position:relative;
+      overflow:hidden;
+      border-radius:20px;
+      border:1px solid #b9dfd1;
+      background:
+        radial-gradient(circle at 20% 18%, rgba(255,255,255,.95) 0 28px, transparent 29px),
+        radial-gradient(circle at 32% 20%, rgba(255,255,255,.95) 0 22px, transparent 23px),
+        radial-gradient(circle at 82% 14%, rgba(255,255,255,.95) 0 24px, transparent 25px),
+        linear-gradient(180deg,#dff5ff 0 52%, #bfe8a6 52% 100%);
+      min-height:270px;
+      padding:18px 16px 16px;
+    }
+    .park-banner{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      margin-bottom:10px;padding:8px 10px;background:rgba(255,255,255,.78);
+      border:1px solid rgba(255,255,255,.7);border-radius:14px
+    }
+    .park-banner .title{font-weight:800}
+    .park-banner .hint{font-size:12px;color:var(--muted)}
+    .park-list{
+      display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;position:relative;z-index:1
+    }
+    .park-dog{
+      width:92px;min-height:106px;border-radius:18px;padding:10px 8px 8px;
+      background:rgba(255,255,255,.9);border:1px solid #dcefd4;text-align:center;
+      box-shadow:0 8px 16px rgba(95,127,77,.08);
+      animation:bob var(--dur,2.8s) ease-in-out infinite;
+      animation-delay:var(--delay,0s)
+    }
+    .park-dog.today{
+      background:#fff5d8;
+      border-color:#f0d27a;
+      box-shadow:0 10px 20px rgba(232,177,78,.18)
+    }
+    .park-dog .emoji{font-size:34px;line-height:1}
+    .park-dog .name{font-size:12px;font-weight:700;margin-top:6px}
+    .park-dog .activity{font-size:11px;color:var(--muted);margin-top:4px}
+    .park-dog .badge{
+      display:inline-block;margin-top:6px;padding:2px 6px;border-radius:999px;
+      background:#2f2d2a;color:#fff;font-size:10px
+    }
+    .park-empty{
+      display:grid;place-items:center;min-height:175px;text-align:center;
+      color:var(--muted);background:rgba(255,255,255,.45);
+      border:1px dashed rgba(93,70,44,.2);border-radius:18px;padding:18px
+    }
+    .today-strip{
+      display:flex;flex-wrap:wrap;gap:8px;margin-top:12px
+    }
+    .today-pill{
+      padding:6px 10px;border-radius:999px;background:#fff1e7;border:1px solid var(--line);
+      font-size:12px
+    }
+
+    .rescue-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+    .rescue-dog{
+      aspect-ratio:1/1.15;border-radius:16px;border:1px solid var(--line);
+      background:#fffaf5;display:flex;flex-direction:column;align-items:center;justify-content:center;
+      text-align:center;padding:10px;position:relative;overflow:hidden
+    }
+    .rescue-dog.locked{filter:grayscale(1);opacity:.5}
+    .rescue-dog.unlocked{border-color:#f0d27a;background:#fffaf0}
+    .rescue-dog .emoji{font-size:32px;line-height:1}
+    .rescue-dog .name{font-size:12px;font-weight:700;margin-top:8px}
+    .rescue-dog .status{
+      position:absolute;bottom:6px;left:50%;transform:translateX(-50%);
+      padding:3px 7px;border-radius:999px;font-size:10px;white-space:nowrap
+    }
+    .rescue-dog.locked .status{background:#ece7df;color:#6e655b}
+    .rescue-dog.unlocked .status{background:#2f2d2a;color:#fff}
+    .rescue-legend{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:10px;color:var(--muted);font-size:12px}
+
     .footer-note{text-align:center;color:var(--muted);font-size:12px;margin-top:18px}
     .toast{
       position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);
@@ -95,8 +200,24 @@
     }
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
     .loading{padding:60px 20px;text-align:center;color:var(--muted);grid-column:1/-1}
-    @media(max-width:1050px){.grid{grid-template-columns:1fr}.dog-grid{grid-template-columns:repeat(7,1fr)}}
-    @media(max-width:780px){.board{grid-template-columns:1fr}.app{padding:16px}.dog-grid{grid-template-columns:repeat(5,1fr)}}
+    @keyframes bob{
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(-7px)}
+    }
+    @media(max-width:1180px){
+      .grid{grid-template-columns:1fr}
+      .rescue-grid{grid-template-columns:repeat(5,1fr)}
+    }
+    @media(max-width:780px){
+      .board{grid-template-columns:1fr}
+      .app{padding:16px}
+      .rescue-grid{grid-template-columns:repeat(4,1fr)}
+      .park-summary{grid-template-columns:1fr 1fr 1fr}
+    }
+    @media(max-width:560px){
+      .rescue-grid{grid-template-columns:repeat(3,1fr)}
+      .park-dog{width:84px}
+    }
   </style>
 </head>
 <body>
@@ -131,7 +252,7 @@
   </div>
 
   <div id="footer" class="footer-note" style="display:none">
-    计时器秒数只保存在当前设备；任务、统计与小狗进度保存在 Supabase 云端。
+    计时器秒数只保存在当前设备；任务、统计、小狗公园与待拯救犬种进度保存在 Supabase 云端。
   </div>
 </div>
 
@@ -142,162 +263,162 @@
 const SUPABASE_URL = "https://afbrhqepoecpreozoqvx.supabase.co";
 const SUPABASE_KEY = "sb_publishable_Gx3fNAg2V0Sgq9OQ59Y8yQ_fRCHOVcB";
 const ROOM_CODE = "DOG2026";
-
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const DOGS = [
-  ["🐶","奶油"],["🐕","柴柴"],["🐩","卷卷"],["🦮","金金"],["🐕‍🦺","勇勇"],
-  ["🐶","豆豆"],["🐕","可可"],["🐩","棉花"],["🦮","布丁"],["🐕‍🦺","星星"],
-  ["🐶","团子"],["🐕","麦麦"],["🐩","雪球"],["🦮","柚子"],["🐕‍🦺","露露"]
+const DOG_BREEDS = [
+  {name:"泰迪",emoji:"🐩"},
+  {name:"边境牧羊犬",emoji:"🐕"},
+  {name:"金毛猎犬",emoji:"🦮"},
+  {name:"德国牧羊犬",emoji:"🐕‍🦺"},
+  {name:"哈士奇",emoji:"🐕"},
+  {name:"巴哥犬",emoji:"🐶"},
+  {name:"拉布拉多犬",emoji:"🦮"},
+  {name:"萨摩耶",emoji:"🐶"},
+  {name:"苏牧",emoji:"🐕"},
+  {name:"贵宾",emoji:"🐩"},
+  {name:"米格鲁猎犬",emoji:"🐶"},
+  {name:"古牧",emoji:"🐶"},
+  {name:"松狮",emoji:"🐶"},
+  {name:"沙皮",emoji:"🐶"},
+  {name:"圣伯纳犬",emoji:"🐶"},
+  {name:"雪纳瑞",emoji:"🐶"},
+  {name:"查尔斯王",emoji:"🐶"},
+  {name:"英国斗牛犬",emoji:"🐶"},
+  {name:"比熊",emoji:"🐶"},
+  {name:"柴犬",emoji:"🐕"},
+  {name:"法斗",emoji:"🐶"},
+  {name:"马尔济斯",emoji:"🐶"},
+  {name:"柯基",emoji:"🐕"},
+  {name:"蝴蝶犬",emoji:"🐶"},
+  {name:"吉娃娃",emoji:"🐶"}
+];
+
+const PARK_ACTIVITIES = [
+  "追球球","晒太阳","追蝴蝶","闻花香","打滚滚","和朋友赛跑","啃小骨头","追飞盘",
+  "在草地散步","在喷水池边玩耍"
 ];
 
 let room = null;
 let roomId = null;
 let profiles = [];
 let tasks = [];
+let todaySessions = [];
 let timers = {};
+let petTabs = {};
 let realtimeChannel = null;
 let refreshTimer = null;
 
 function h(s=""){
   return String(s).replace(/[&<>"']/g,m=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
   }[m]));
 }
 
 function fmt(sec){
-  sec=Math.max(0,Math.ceil(sec));
+  sec = Math.max(0, Math.ceil(sec));
   return String(Math.floor(sec/60)).padStart(2,"0")+":"+String(sec%60).padStart(2,"0");
 }
 
-function earnedDogs(p){
-  return Math.min(
-    DOGS.length,
-    Math.floor((p.completed_sessions||0)/Math.max(1,p.reward_every||3))
-  );
-}
-
-function nextRewardText(p){
-  const every=Math.max(1,p.reward_every||3);
-  const earned=earnedDogs(p);
-
-  if(earned>=DOGS.length) return "你已经收集完全部小狗！";
-
-  const next=(Math.floor((p.completed_sessions||0)/every)+1)*every;
-  return `再完成 ${next-(p.completed_sessions||0)} 个专注番茄，即可解锁下一只小狗。`;
-}
-
 function setStatus(type,text){
-  const d=document.getElementById("statusDot");
-  const t=document.getElementById("statusText");
-  d.className="dot "+type;
-  t.textContent=text;
+  const d = document.getElementById("statusDot");
+  const t = document.getElementById("statusText");
+  d.className = "dot "+type;
+  t.textContent = text;
 }
 
 function showGate(message=""){
-  document.getElementById("gate").style.display="grid";
-  document.getElementById("board").style.display="none";
-  document.getElementById("footer").style.display="none";
-  document.getElementById("gateError").textContent=message;
-  setStatus("","等待密码");
+  document.getElementById("gate").style.display = "grid";
+  document.getElementById("board").style.display = "none";
+  document.getElementById("footer").style.display = "none";
+  document.getElementById("gateError").textContent = message;
+  setStatus("", "等待密码");
 }
 
 function showApp(){
-  document.getElementById("gate").style.display="none";
-  document.getElementById("board").style.display="grid";
-  document.getElementById("footer").style.display="block";
+  document.getElementById("gate").style.display = "none";
+  document.getElementById("board").style.display = "grid";
+  document.getElementById("footer").style.display = "block";
 }
 
 async function ensureAnonymousSession(){
-  const {data:{session},error}=await db.auth.getSession();
+  const {data:{session},error} = await db.auth.getSession();
   if(error) throw error;
-
   if(session) return session;
-
-  const {data,error:signError}=await db.auth.signInAnonymously();
+  const {data,error:signError} = await db.auth.signInAnonymously();
   if(signError) throw signError;
-
   return data.session;
 }
 
 async function findExistingMembership(){
-  const {data,error}=await db
-    .from("room_members")
-    .select("room_id")
-    .limit(1);
-
+  const {data,error} = await db.from("room_members").select("room_id").limit(1);
   if(error) throw error;
   return data && data.length ? data[0].room_id : null;
 }
 
 async function joinRoom(){
-  const input=document.getElementById("roomPassword");
-  const btn=document.getElementById("joinBtn");
-  const err=document.getElementById("gateError");
-  const password=input.value.trim();
+  const input = document.getElementById("roomPassword");
+  const btn = document.getElementById("joinBtn");
+  const err = document.getElementById("gateError");
+  const password = input.value.trim();
 
   if(!password){
-    err.textContent="请输入共享密码。";
+    err.textContent = "请输入共享密码。";
     return;
   }
 
-  btn.disabled=true;
-  btn.textContent="正在验证…";
-  err.textContent="";
+  btn.disabled = true;
+  btn.textContent = "正在验证…";
+  err.textContent = "";
 
   try{
-    const {data,error}=await db.rpc("join_room",{
-      p_room_code:ROOM_CODE,
-      p_access_token:password
+    const {data,error} = await db.rpc("join_room",{
+      p_room_code: ROOM_CODE,
+      p_access_token: password
     });
 
     if(error) throw error;
-
-    roomId=data;
-    input.value="";
-
+    roomId = data;
+    input.value = "";
     await loadAll();
     subscribeRealtime();
 
   }catch(e){
     console.error(e);
-    const msg=String(e.message||e);
-
+    const msg = String(e.message||e);
     if(msg.includes("Invalid room password")){
-      err.textContent="密码不正确。";
+      err.textContent = "密码不正确。";
     }else if(msg.includes("Room not found")){
-      err.textContent="找不到这个房间。";
+      err.textContent = "找不到这个房间。";
     }else{
-      err.textContent="验证失败："+msg;
+      err.textContent = "验证失败："+msg;
     }
-
   }finally{
-    btn.disabled=false;
-    btn.textContent="进入学习空间";
+    btn.disabled = false;
+    btn.textContent = "进入学习空间";
   }
 }
 
 async function boot(){
   try{
-    setStatus("","正在建立安全会话…");
-
+    setStatus("", "正在建立安全会话…");
     await ensureAnonymousSession();
-
-    const existing=await findExistingMembership();
+    const existing = await findExistingMembership();
 
     if(existing){
-      roomId=existing;
+      roomId = existing;
       await loadAll();
       subscribeRealtime();
     }else{
       showGate();
     }
-
   }catch(e){
     console.error(e);
-    setStatus("error","初始化失败");
-
-    document.getElementById("board").innerHTML=
+    setStatus("error", "初始化失败");
+    document.getElementById("board").innerHTML =
       `<div class="loading">
         初始化失败：${h(e.message||e)}
         <br><br>
@@ -310,249 +431,323 @@ async function loadAll(){
   try{
     if(!roomId) throw new Error("没有房间授权");
 
-    const r=await db
-      .from("rooms")
-      .select("*")
-      .eq("id",roomId)
-      .single();
+    const roomRes = await db.from("rooms").select("*").eq("id",roomId).single();
+    if(roomRes.error) throw roomRes.error;
+    room = roomRes.data;
 
-    if(r.error) throw r.error;
-    room=r.data;
+    const profilesRes = await db.from("profiles").select("*").eq("room_id",roomId).order("slot");
+    if(profilesRes.error) throw profilesRes.error;
+    profiles = profilesRes.data || [];
 
-    const p=await db
-      .from("profiles")
-      .select("*")
-      .eq("room_id",roomId)
-      .order("slot");
+    const tasksRes = await db.from("tasks").select("*").eq("room_id",roomId).order("created_at",{ascending:false});
+    if(tasksRes.error) throw tasksRes.error;
+    tasks = tasksRes.data || [];
 
-    if(p.error) throw p.error;
-    profiles=p.data||[];
-
-    const ts=await db
-      .from("tasks")
+    const start = new Date();
+    start.setHours(0,0,0,0);
+    const sessionsRes = await db.from("pomodoro_sessions")
       .select("*")
       .eq("room_id",roomId)
-      .order("created_at",{ascending:false});
-
-    if(ts.error) throw ts.error;
-    tasks=ts.data||[];
+      .gte("completed_at", start.toISOString())
+      .order("completed_at",{ascending:false});
+    if(sessionsRes.error) throw sessionsRes.error;
+    todaySessions = sessionsRes.data || [];
 
     showApp();
-    setStatus("online","已授权 · 云端已连接");
+    setStatus("online", "已授权 · 云端已连接");
     render();
-
   }catch(e){
     console.error(e);
-    setStatus("error","读取失败");
-
-    document.getElementById("board").style.display="grid";
-    document.getElementById("board").innerHTML=
+    setStatus("error", "读取失败");
+    document.getElementById("board").style.display = "grid";
+    document.getElementById("board").innerHTML =
       `<div class="loading">无法读取房间数据：${h(e.message||e)}</div>`;
   }
 }
 
 function timerFor(p){
   if(!timers[p.id]){
-    const key="dog-timer-"+p.id;
-    let saved=null;
-
+    const key = "dog-timer-"+p.id;
+    let saved = null;
     try{
-      saved=JSON.parse(localStorage.getItem(key));
+      saved = JSON.parse(localStorage.getItem(key));
     }catch(e){}
-
-    timers[p.id]=saved||{
+    timers[p.id] = saved || {
       mode:"focus",
       remaining:(p.focus_minutes||25)*60,
       running:false,
       endAt:null
     };
   }
-
   return timers[p.id];
 }
 
 function saveTimer(p){
-  localStorage.setItem("dog-timer-"+p.id,JSON.stringify(timerFor(p)));
+  localStorage.setItem("dog-timer-"+p.id, JSON.stringify(timerFor(p)));
+}
+
+function totalUnlockedDogs(p){
+  return Math.min(
+    DOG_BREEDS.length,
+    Math.floor((p.completed_sessions||0) / Math.max(1,p.reward_every||3))
+  );
+}
+
+function nextRewardText(p){
+  const every = Math.max(1,p.reward_every||3);
+  const unlocked = totalUnlockedDogs(p);
+  if(unlocked >= DOG_BREEDS.length) return "所有待拯救小狗都已经入住公园啦！";
+  const next = (Math.floor((p.completed_sessions||0)/every)+1)*every;
+  return `再完成 ${next-(p.completed_sessions||0)} 个专注番茄，即可救助下一只小狗。`;
+}
+
+function todaySessionCount(profileId){
+  return todaySessions.filter(x=>x.profile_id===profileId).length;
+}
+
+function todayUnlockedCount(p){
+  const every = Math.max(1,p.reward_every||3);
+  const totalNow = p.completed_sessions||0;
+  const todayCount = todaySessionCount(p.id);
+  const beforeToday = Math.max(0, totalNow - todayCount);
+  return Math.max(0, Math.floor(totalNow/every) - Math.floor(beforeToday/every));
+}
+
+function unlockedDogs(p){
+  return DOG_BREEDS.slice(0,totalUnlockedDogs(p));
+}
+
+function todayUnlockedDogs(p){
+  const count = todayUnlockedCount(p);
+  const total = totalUnlockedDogs(p);
+  if(count<=0) return [];
+  return DOG_BREEDS.slice(Math.max(0,total-count), total);
+}
+
+function dogTabFor(id){
+  if(!petTabs[id]) petTabs[id] = "park";
+  return petTabs[id];
+}
+
+function setDogTab(id,tab){
+  petTabs[id] = tab;
+  render();
+}
+
+function parkDogCard(dog,index,isToday){
+  const activity = PARK_ACTIVITIES[index % PARK_ACTIVITIES.length];
+  const delay = ((index%5)*0.24).toFixed(2);
+  const dur = (2.4 + (index%4)*0.35).toFixed(2);
+
+  return `
+    <div class="park-dog ${isToday?"today":""}" style="--delay:${delay}s;--dur:${dur}s">
+      <div class="emoji">${dog.emoji}</div>
+      <div class="name">${h(dog.name)}</div>
+      <div class="activity">${activity}</div>
+      ${isToday?'<div class="badge">今日新到</div>':''}
+    </div>
+  `;
+}
+
+function renderDogZone(p){
+  const tab = dogTabFor(p.id);
+  const rescued = unlockedDogs(p);
+  const todayDogs = todayUnlockedDogs(p);
+  const todayNames = new Set(todayDogs.map(x=>x.name));
+
+  return `
+    <div class="card">
+      <div class="pet-head">
+        <h3 style="margin:0">小狗乐园</h3>
+        <small>如图犬种 · 共 ${DOG_BREEDS.length} 种</small>
+      </div>
+
+      <div class="pet-tabs">
+        <button class="${tab==="park"?"active":""}" onclick="setDogTab('${p.id}','park')">狗狗公园</button>
+        <button class="${tab==="rescue"?"active":""}" onclick="setDogTab('${p.id}','rescue')">待拯救的小狗</button>
+      </div>
+
+      ${
+        tab==="park"
+        ? `
+          <div class="park-summary">
+            <div class="park-chip">
+              <b>${rescued.length}</b>
+              <span>公园入住小狗</span>
+            </div>
+            <div class="park-chip">
+              <b>${todayUnlockedCount(p)}</b>
+              <span>今日新解锁</span>
+            </div>
+            <div class="park-chip">
+              <b>${todaySessionCount(p)}</b>
+              <span>今日完成番茄</span>
+            </div>
+          </div>
+
+          <div class="park-scene">
+            <div class="park-banner">
+              <div>
+                <div class="title">狗狗公园</div>
+                <div class="hint">已经被你救助成功的小狗会在这里玩耍</div>
+              </div>
+              <div class="hint">${rescued.length}/${DOG_BREEDS.length} 已入住</div>
+            </div>
+
+            ${
+              rescued.length
+              ? `<div class="park-list">
+                  ${rescued.map((dog,index)=>parkDogCard(dog,index,todayNames.has(dog.name))).join("")}
+                </div>`
+              : `<div class="park-empty">
+                  <div>
+                    <div style="font-size:40px">🌳</div>
+                    <div style="font-weight:700;margin-top:8px">公园还没有小狗入住</div>
+                    <div style="margin-top:6px">${nextRewardText(p)}</div>
+                  </div>
+                </div>`
+            }
+          </div>
+
+          <div class="today-strip">
+            ${
+              todayDogs.length
+              ? todayDogs.map(d=>`<span class="today-pill">今日收集：${d.emoji} ${h(d.name)}</span>`).join("")
+              : `<span class="today-pill">今日还没有新收集到小狗</span>`
+            }
+          </div>
+        `
+        : `
+          <div class="rescue-legend">
+            <span>已救助：${rescued.length} 只</span>
+            <span>待拯救：${DOG_BREEDS.length-rescued.length} 只</span>
+          </div>
+
+          <div class="rescue-grid">
+            ${DOG_BREEDS.map((dog,index)=>{
+              const ok = index < rescued.length;
+              return `
+                <div class="rescue-dog ${ok?"unlocked":"locked"}" title="${ok?'已救助':'待拯救'}">
+                  <div class="emoji">${dog.emoji}</div>
+                  <div class="name">${h(dog.name)}</div>
+                  <div class="status">${ok?'已救助':'待拯救'}</div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+
+          <div class="milestone">${nextRewardText(p)}</div>
+        `
+      }
+    </div>
+  `;
 }
 
 function userHTML(p){
-  const t=timerFor(p);
-  const total=(t.mode==="focus"?(p.focus_minutes||25):(p.break_minutes||5))*60;
-  const pct=total?(1-t.remaining/total)*100:0;
-  const myTasks=tasks.filter(x=>x.profile_id===p.id);
+  const t = timerFor(p);
+  const total = (t.mode==="focus" ? (p.focus_minutes||25) : (p.break_minutes||5))*60;
+  const pct = total ? (1 - t.remaining/total) * 100 : 0;
+  const myTasks = tasks.filter(x=>x.profile_id===p.id);
 
   return `
-  <section class="user">
-    <div class="user-head">
-      <div class="identity">
-        <div class="avatar">${h(p.avatar||"🐶")}</div>
-        <div class="name-wrap">
-          <input value="${h(p.display_name)}"
-                 onchange="renameUser('${p.id}',this.value)"
-                 aria-label="用户名">
-          <div class="sub">${p.slot==="A"?"左侧用户":"右侧用户"} · 云端共享</div>
+    <section class="user">
+      <div class="user-head">
+        <div class="identity">
+          <div class="avatar">${h(p.avatar||"🐶")}</div>
+          <div class="name-wrap">
+            <input value="${h(p.display_name)}" onchange="renameUser('${p.id}',this.value)" aria-label="用户名">
+            <div class="sub">${p.slot==="A"?"左侧用户":"右侧用户"} · 云端共享</div>
+          </div>
         </div>
-      </div>
-      <button onclick="cycleAvatar('${p.id}')">换头像</button>
-    </div>
-
-    <div class="grid">
-
-      <div class="card timer-box">
-        <h3>番茄钟</h3>
-
-        <div class="mode-row">
-          <button class="${t.mode==="focus"?"active":""}"
-                  onclick="setMode('${p.id}','focus')">专注</button>
-
-          <button class="${t.mode==="break"?"active":""}"
-                  onclick="setMode('${p.id}','break')">休息</button>
-        </div>
-
-        <div class="timer" id="timer-${p.id}">
-          ${fmt(t.remaining)}
-        </div>
-
-        <div class="progress">
-          <div id="progress-${p.id}" style="width:${pct}%"></div>
-        </div>
-
-        <div class="timer-actions">
-          <button class="primary" onclick="toggleTimer('${p.id}')">
-            ${t.running?"暂停":"开始"}
-          </button>
-
-          <button onclick="resetTimer('${p.id}')">
-            重置
-          </button>
-
-          <button class="green" onclick="finishNow('${p.id}')">
-            完成本轮
-          </button>
-        </div>
-
-        <div class="preset-row">
-          专注
-          <input type="number"
-                 min="1"
-                 max="180"
-                 value="${p.focus_minutes||25}"
-                 onchange="setMinutes('${p.id}','focus_minutes',this.value)">
-          分钟
-
-          · 休息
-
-          <input type="number"
-                 min="1"
-                 max="60"
-                 value="${p.break_minutes||5}"
-                 onchange="setMinutes('${p.id}','break_minutes',this.value)">
-          分钟
-        </div>
+        <button onclick="cycleAvatar('${p.id}')">换头像</button>
       </div>
 
-      <div class="card">
-        <h3>学习统计</h3>
-
-        <div class="stats">
-          <div class="stat">
-            <b>${p.completed_sessions||0}</b>
-            <span>完成番茄</span>
+      <div class="grid">
+        <div class="card timer-box">
+          <h3>番茄钟</h3>
+          <div class="mode-row">
+            <button class="${t.mode==="focus"?"active":""}" onclick="setMode('${p.id}','focus')">专注</button>
+            <button class="${t.mode==="break"?"active":""}" onclick="setMode('${p.id}','break')">休息</button>
           </div>
 
-          <div class="stat">
-            <b>${p.focused_minutes||0}</b>
-            <span>专注分钟</span>
+          <div class="timer" id="timer-${p.id}">${fmt(t.remaining)}</div>
+
+          <div class="progress">
+            <div id="progress-${p.id}" style="width:${pct}%"></div>
           </div>
 
-          <div class="stat">
-            <b>${earnedDogs(p)}</b>
-            <span>已收集小狗</span>
+          <div class="timer-actions">
+            <button class="primary" onclick="toggleTimer('${p.id}')">${t.running?"暂停":"开始"}</button>
+            <button onclick="resetTimer('${p.id}')">重置</button>
+            <button class="green" onclick="finishNow('${p.id}')">完成本轮</button>
+          </div>
+
+          <div class="preset-row">
+            专注
+            <input type="number" min="1" max="180" value="${p.focus_minutes||25}" onchange="setMinutes('${p.id}','focus_minutes',this.value)">
+            分钟 · 休息
+            <input type="number" min="1" max="60" value="${p.break_minutes||5}" onchange="setMinutes('${p.id}','break_minutes',this.value)">
+            分钟
           </div>
         </div>
 
-        <div class="milestone">
-          ${nextRewardText(p)}
+        <div class="card">
+          <h3>学习统计</h3>
+          <div class="stats">
+            <div class="stat">
+              <b>${p.completed_sessions||0}</b>
+              <span>完成番茄</span>
+            </div>
+            <div class="stat">
+              <b>${p.focused_minutes||0}</b>
+              <span>专注分钟</span>
+            </div>
+            <div class="stat">
+              <b>${totalUnlockedDogs(p)}</b>
+              <span>已救助小狗</span>
+            </div>
+          </div>
+
+          <div class="milestone">${nextRewardText(p)}</div>
+
+          <div class="preset-row" style="justify-content:flex-start">
+            每完成
+            <input type="number" min="1" max="20" value="${p.reward_every||3}" onchange="setRewardEvery('${p.id}',this.value)">
+            个专注番茄，解锁 1 只小狗
+          </div>
         </div>
 
-        <div class="preset-row" style="justify-content:flex-start">
-          每完成
-          <input type="number"
-                 min="1"
-                 max="20"
-                 value="${p.reward_every||3}"
-                 onchange="setRewardEvery('${p.id}',this.value)">
-          个专注番茄，解锁 1 只小狗
+        <div class="card">
+          <h3>学习任务</h3>
+          <div class="task-form">
+            <input id="task-input-${p.id}" placeholder="例如：背单词 30 个" onkeydown="if(event.key==='Enter')addTask('${p.id}')">
+            <button class="primary" onclick="addTask('${p.id}')">添加</button>
+          </div>
+
+          <div class="task-list">
+            ${
+              myTasks.length
+              ? myTasks.map(x=>`
+                  <div class="task ${x.completed?"done":""}">
+                    <input type="checkbox" ${x.completed?"checked":""} onchange="toggleTask('${x.id}',${!x.completed})">
+                    <div class="task-text">${h(x.text)}</div>
+                    <small>${x.completed?"完成":"进行中"}</small>
+                    <button onclick="deleteTask('${x.id}')">删除</button>
+                  </div>
+                `).join("")
+              : `<div class="sub">还没有任务。添加一个学习任务。</div>`
+            }
+          </div>
         </div>
+
+        ${renderDogZone(p)}
       </div>
-
-      <div class="card">
-        <h3>学习任务</h3>
-
-        <div class="task-form">
-          <input id="task-input-${p.id}"
-                 placeholder="例如：背单词 30 个"
-                 onkeydown="if(event.key==='Enter')addTask('${p.id}')">
-
-          <button class="primary"
-                  onclick="addTask('${p.id}')">
-            添加
-          </button>
-        </div>
-
-        <div class="task-list">
-
-          ${myTasks.length
-            ? myTasks.map(x=>`
-              <div class="task ${x.completed?"done":""}">
-                <input type="checkbox"
-                       ${x.completed?"checked":""}
-                       onchange="toggleTask('${x.id}',${!x.completed})">
-
-                <div class="task-text">
-                  ${h(x.text)}
-                </div>
-
-                <small>${x.completed?"完成":"进行中"}</small>
-
-                <button onclick="deleteTask('${x.id}')">
-                  删除
-                </button>
-              </div>
-            `).join("")
-            : `<div class="sub">还没有任务。添加一个学习任务。</div>`
-          }
-
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="reward-head">
-          <h3 style="margin:0">小狗收藏册</h3>
-          <small>${earnedDogs(p)}/${DOGS.length}</small>
-        </div>
-
-        <div class="dog-grid">
-          ${DOGS.map((d,di)=>{
-            const unlocked=di<earnedDogs(p);
-
-            return `
-              <div class="dog ${unlocked?"":"locked"}"
-                   title="${unlocked?d[1]:"未解锁"}">
-                <div class="emoji">${d[0]}</div>
-                <div class="badge">${unlocked?d[1]:"🔒"}</div>
-              </div>
-            `;
-          }).join("")}
-        </div>
-      </div>
-
-    </div>
-  </section>`;
+    </section>
+  `;
 }
 
 function render(){
-  document.getElementById("board").innerHTML=
+  document.getElementById("board").innerHTML =
     profiles.length
       ? profiles.map(userHTML).join("")
       : `<div class="loading">房间里没有找到用户。</div>`;
@@ -565,31 +760,17 @@ function profileById(id){
 }
 
 async function renameUser(id,value){
-  const v=value.trim();
+  const v = value.trim();
   if(!v) return;
-
-  const {error}=await db
-    .from("profiles")
-    .update({display_name:v})
-    .eq("id",id);
-
-  if(error){
-    toast("修改名字失败："+error.message);
-  }
+  const {error} = await db.from("profiles").update({display_name:v}).eq("id",id);
+  if(error) toast("修改名字失败："+error.message);
 }
 
 async function cycleAvatar(id){
-  const p=profileById(id);
-  const icons=["🐶","🐕","🐩","🦮","🐕‍🦺","🐾"];
-
-  const next=
-    icons[(icons.indexOf(p.avatar)+1+icons.length)%icons.length];
-
-  const {error}=await db
-    .from("profiles")
-    .update({avatar:next})
-    .eq("id",id);
-
+  const p = profileById(id);
+  const icons = ["🐶","🐕","🐩","🦮","🐕‍🦺","🐾"];
+  const next = icons[(icons.indexOf(p.avatar)+1+icons.length)%icons.length];
+  const {error} = await db.from("profiles").update({avatar:next}).eq("id",id);
   if(error){
     toast("修改头像失败："+error.message);
   }else{
@@ -598,50 +779,30 @@ async function cycleAvatar(id){
 }
 
 function setMode(id,mode){
-  const p=profileById(id);
-  const t=timerFor(p);
-
-  t.running=false;
-  t.endAt=null;
-  t.mode=mode;
-
-  t.remaining=
-    (mode==="focus"
-      ? (p.focus_minutes||25)
-      : (p.break_minutes||5)
-    )*60;
-
+  const p = profileById(id);
+  const t = timerFor(p);
+  t.running = false;
+  t.endAt = null;
+  t.mode = mode;
+  t.remaining = (mode==="focus" ? (p.focus_minutes||25) : (p.break_minutes||5))*60;
   saveTimer(p);
   render();
 }
 
 function toggleTimer(id){
-  const p=profileById(id);
-  const t=timerFor(p);
+  const p = profileById(id);
+  const t = timerFor(p);
 
   if(t.running){
-
-    t.remaining=
-      Math.max(
-        0,
-        Math.ceil((t.endAt-Date.now())/1000)
-      );
-
-    t.running=false;
-    t.endAt=null;
-
+    t.remaining = Math.max(0, Math.ceil((t.endAt-Date.now())/1000));
+    t.running = false;
+    t.endAt = null;
   }else{
-
     if(t.remaining<=0){
-      t.remaining=
-        (t.mode==="focus"
-          ? (p.focus_minutes||25)
-          : (p.break_minutes||5)
-        )*60;
+      t.remaining = (t.mode==="focus" ? (p.focus_minutes||25) : (p.break_minutes||5))*60;
     }
-
-    t.running=true;
-    t.endAt=Date.now()+t.remaining*1000;
+    t.running = true;
+    t.endAt = Date.now() + t.remaining*1000;
   }
 
   saveTimer(p);
@@ -649,18 +810,11 @@ function toggleTimer(id){
 }
 
 function resetTimer(id){
-  const p=profileById(id);
-  const t=timerFor(p);
-
-  t.running=false;
-  t.endAt=null;
-
-  t.remaining=
-    (t.mode==="focus"
-      ? (p.focus_minutes||25)
-      : (p.break_minutes||5)
-    )*60;
-
+  const p = profileById(id);
+  const t = timerFor(p);
+  t.running = false;
+  t.endAt = null;
+  t.remaining = (t.mode==="focus" ? (p.focus_minutes||25) : (p.break_minutes||5))*60;
   saveTimer(p);
   render();
 }
@@ -670,53 +824,41 @@ async function finishNow(id){
 }
 
 async function completeRound(id){
-  const p=profileById(id);
-  const t=timerFor(p);
-  const wasFocus=t.mode==="focus";
+  const p = profileById(id);
+  const t = timerFor(p);
+  const wasFocus = t.mode==="focus";
 
-  t.running=false;
-  t.endAt=null;
+  t.running = false;
+  t.endAt = null;
 
   if(wasFocus){
+    const minutes = p.focus_minutes||25;
 
-    const minutes=p.focus_minutes||25;
-
-    const {error:sErr}=await db
-      .from("pomodoro_sessions")
-      .insert({
-        room_id:p.room_id,
-        profile_id:p.id,
-        duration_minutes:minutes
-      });
-
+    const {error:sErr} = await db.from("pomodoro_sessions").insert({
+      room_id:p.room_id,
+      profile_id:p.id,
+      duration_minutes:minutes
+    });
     if(sErr){
       toast("保存番茄记录失败："+sErr.message);
       return;
     }
 
-    const {error:pErr}=await db
-      .from("profiles")
-      .update({
-        completed_sessions:(p.completed_sessions||0)+1,
-        focused_minutes:(p.focused_minutes||0)+minutes
-      })
-      .eq("id",p.id);
-
+    const {error:pErr} = await db.from("profiles").update({
+      completed_sessions:(p.completed_sessions||0)+1,
+      focused_minutes:(p.focused_minutes||0)+minutes
+    }).eq("id",p.id);
     if(pErr){
       toast("更新统计失败："+pErr.message);
       return;
     }
 
-    t.mode="break";
-    t.remaining=(p.break_minutes||5)*60;
-
+    t.mode = "break";
+    t.remaining = (p.break_minutes||5)*60;
     toast(`${p.display_name} 完成了一个专注番茄`);
-
   }else{
-
-    t.mode="focus";
-    t.remaining=(p.focus_minutes||25)*60;
-
+    t.mode = "focus";
+    t.remaining = (p.focus_minutes||25)*60;
     toast(`${p.display_name} 休息结束`);
   }
 
@@ -725,34 +867,21 @@ async function completeRound(id){
 }
 
 async function setMinutes(id,key,value){
-  const p=profileById(id);
-  const max=key==="focus_minutes"?180:60;
+  const p = profileById(id);
+  const max = key==="focus_minutes" ? 180 : 60;
+  const n = Math.max(1, Math.min(max, parseInt(value)||1));
 
-  const n=
-    Math.max(
-      1,
-      Math.min(max,parseInt(value)||1)
-    );
-
-  const {error}=await db
-    .from("profiles")
-    .update({[key]:n})
-    .eq("id",id);
-
+  const {error} = await db.from("profiles").update({[key]:n}).eq("id",id);
   if(error){
     toast("设置失败："+error.message);
     return;
   }
 
-  const t=timerFor(p);
-
-  if(
-    (key==="focus_minutes"&&t.mode==="focus") ||
-    (key==="break_minutes"&&t.mode==="break")
-  ){
-    t.running=false;
-    t.endAt=null;
-    t.remaining=n*60;
+  const t = timerFor(p);
+  if((key==="focus_minutes"&&t.mode==="focus") || (key==="break_minutes"&&t.mode==="break")){
+    t.running = false;
+    t.endAt = null;
+    t.remaining = n*60;
     saveTimer(p);
   }
 
@@ -760,17 +889,8 @@ async function setMinutes(id,key,value){
 }
 
 async function setRewardEvery(id,value){
-  const n=
-    Math.max(
-      1,
-      Math.min(20,parseInt(value)||1)
-    );
-
-  const {error}=await db
-    .from("profiles")
-    .update({reward_every:n})
-    .eq("id",id);
-
+  const n = Math.max(1, Math.min(20, parseInt(value)||1));
+  const {error} = await db.from("profiles").update({reward_every:n}).eq("id",id);
   if(error){
     toast("设置失败："+error.message);
   }else{
@@ -779,21 +899,17 @@ async function setRewardEvery(id,value){
 }
 
 async function addTask(profileId){
-  const p=profileById(profileId);
-  const input=document.getElementById(`task-input-${profileId}`);
-  const text=input.value.trim();
-
+  const p = profileById(profileId);
+  const input = document.getElementById(`task-input-${profileId}`);
+  const text = input.value.trim();
   if(!text) return;
+  input.value = "";
 
-  input.value="";
-
-  const {error}=await db
-    .from("tasks")
-    .insert({
-      room_id:p.room_id,
-      profile_id:p.id,
-      text
-    });
+  const {error} = await db.from("tasks").insert({
+    room_id:p.room_id,
+    profile_id:p.id,
+    text
+  });
 
   if(error){
     toast("添加任务失败："+error.message);
@@ -803,11 +919,7 @@ async function addTask(profileId){
 }
 
 async function toggleTask(taskId,completed){
-  const {error}=await db
-    .from("tasks")
-    .update({completed})
-    .eq("id",taskId);
-
+  const {error} = await db.from("tasks").update({completed}).eq("id",taskId);
   if(error){
     toast("更新任务失败："+error.message);
   }else{
@@ -816,11 +928,7 @@ async function toggleTask(taskId,completed){
 }
 
 async function deleteTask(taskId){
-  const {error}=await db
-    .from("tasks")
-    .delete()
-    .eq("id",taskId);
-
+  const {error} = await db.from("tasks").delete().eq("id",taskId);
   if(error){
     toast("删除任务失败："+error.message);
   }else{
@@ -830,42 +938,15 @@ async function deleteTask(taskId){
 
 function updateDynamic(){
   profiles.forEach(p=>{
-    const t=timerFor(p);
+    const t = timerFor(p);
+    if(t.running && t.endAt){
+      t.remaining = Math.max(0, Math.ceil((t.endAt-Date.now())/1000));
+      const total = (t.mode==="focus" ? (p.focus_minutes||25) : (p.break_minutes||5))*60;
+      const el = document.getElementById(`timer-${p.id}`);
+      const bar = document.getElementById(`progress-${p.id}`);
 
-    if(t.running&&t.endAt){
-
-      t.remaining=
-        Math.max(
-          0,
-          Math.ceil((t.endAt-Date.now())/1000)
-        );
-
-      const total=
-        (t.mode==="focus"
-          ? (p.focus_minutes||25)
-          : (p.break_minutes||5)
-        )*60;
-
-      const el=
-        document.getElementById(`timer-${p.id}`);
-
-      const bar=
-        document.getElementById(`progress-${p.id}`);
-
-      if(el){
-        el.textContent=fmt(t.remaining);
-      }
-
-      if(bar){
-        bar.style.width=
-          `${Math.min(
-            100,
-            Math.max(
-              0,
-              (1-t.remaining/total)*100
-            )
-          )}%`;
-      }
+      if(el) el.textContent = fmt(t.remaining);
+      if(bar) bar.style.width = `${Math.min(100,Math.max(0,(1-t.remaining/total)*100))}%`;
 
       if(t.remaining<=0){
         saveTimer(p);
@@ -876,89 +957,48 @@ function updateDynamic(){
 }
 
 function toast(msg){
-  const e=document.getElementById("toast");
-  e.textContent=msg;
+  const e = document.getElementById("toast");
+  e.textContent = msg;
   e.classList.add("show");
-
-  setTimeout(
-    ()=>e.classList.remove("show"),
-    2600
-  );
+  setTimeout(()=>e.classList.remove("show"),2600);
 }
 
 function subscribeRealtime(){
   if(realtimeChannel) return;
 
-  realtimeChannel=
-    db.channel("dog-room-"+ROOM_CODE)
-
-      .on(
-        "postgres_changes",
-        {
-          event:"*",
-          schema:"public",
-          table:"profiles",
-          filter:`room_id=eq.${roomId}`
-        },
-        ()=>scheduleRefresh()
-      )
-
-      .on(
-        "postgres_changes",
-        {
-          event:"*",
-          schema:"public",
-          table:"tasks",
-          filter:`room_id=eq.${roomId}`
-        },
-        ()=>scheduleRefresh()
-      )
-
-      .on(
-        "postgres_changes",
-        {
-          event:"*",
-          schema:"public",
-          table:"pomodoro_sessions",
-          filter:`room_id=eq.${roomId}`
-        },
-        ()=>scheduleRefresh()
-      )
-
-      .subscribe(status=>{
-        if(status==="SUBSCRIBED"){
-          setStatus("online","已授权 · 实时同步");
-        }
-      });
+  realtimeChannel = db.channel("dog-room-"+ROOM_CODE)
+    .on("postgres_changes",{
+      event:"*",schema:"public",table:"profiles",filter:`room_id=eq.${roomId}`
+    },()=>scheduleRefresh())
+    .on("postgres_changes",{
+      event:"*",schema:"public",table:"tasks",filter:`room_id=eq.${roomId}`
+    },()=>scheduleRefresh())
+    .on("postgres_changes",{
+      event:"*",schema:"public",table:"pomodoro_sessions",filter:`room_id=eq.${roomId}`
+    },()=>scheduleRefresh())
+    .subscribe(status=>{
+      if(status==="SUBSCRIBED"){
+        setStatus("online", "已授权 · 实时同步");
+      }
+    });
 }
 
 function scheduleRefresh(){
   clearTimeout(refreshTimer);
-
-  refreshTimer=
-    setTimeout(
-      ()=>loadAll(),
-      180
-    );
+  refreshTimer = setTimeout(()=>loadAll(),180);
 }
 
-setInterval(
-  ()=>{
-    updateDynamic();
-    profiles.forEach(saveTimer);
-  },
-  250
-);
+setInterval(()=>{
+  updateDynamic();
+  profiles.forEach(saveTimer);
+},250);
 
-document.addEventListener(
-  "visibilitychange",
-  ()=>{
-    if(!document.hidden&&roomId){
-      updateDynamic();
-      loadAll();
-    }
+document.addEventListener("visibilitychange",()=>{
+  if(!document.hidden && roomId){
+    updateDynamic();
+    loadAll();
   }
-);
+});
 
 boot();
 </script>
