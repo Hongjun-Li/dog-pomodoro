@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>双人学习小狗番茄钟</title>
+  <style>
+    :root{
+      --bg:#fff8ef;
+      --panel:#ffffff;
+      --line:#eadfce;
+      --text:#2c2a27;
+      --muted:#7b746b;
+      --accent:#ff9d66;
+      --accent-2:#ffd4b8;
+      --green:#7fc8a9;
+      --yellow:#f7d778;
+      --shadow:0 12px 30px rgba(93,70,44,.10);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:ui-rounded, "SF Pro Rounded", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 20% 10%, #ffe3cd 0 90px, transparent 91px),
+        radial-gradient(circle at 80% 15%, #fff0a8 0 70px, transparent 71px),
+        var(--bg);
+      min-height:100vh;
+    }
+    .app{max-width:1400px;margin:auto;padding:28px}
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px
+    }
+    .brand h1{margin:0;font-size:28px}
+    .brand p{margin:6px 0 0;color:var(--muted);font-size:14px}
+    .top-actions{display:flex;gap:10px;flex-wrap:wrap}
+    button, input, select, textarea{font:inherit}
+    button{
+      border:0;border-radius:12px;padding:10px 14px;cursor:pointer;
+      background:#f6eee5;color:var(--text);transition:.18s transform,.18s opacity
+    }
+    button:hover{transform:translateY(-1px)}
+    button.primary{background:var(--accent);color:white;font-weight:700}
+    button.green{background:var(--green);color:white;font-weight:700}
+    button.ghost{background:white;border:1px solid var(--line)}
+    .board{
+      display:grid;grid-template-columns:1fr 1fr;gap:20px
+    }
+    .user{
+      background:rgba(255,255,255,.86);backdrop-filter:blur(8px);
+      border:1px solid rgba(234,223,206,.9);border-radius:24px;padding:20px;
+      box-shadow:var(--shadow);min-width:0
+    }
+    .user-head{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px
+    }
+    .identity{display:flex;align-items:center;gap:12px;min-width:0}
+    .avatar{
+      width:52px;height:52px;border-radius:18px;display:grid;place-items:center;
+      background:#fff1e7;border:1px solid var(--line);font-size:30px
+    }
+    .name-wrap input{
+      width:100%;border:0;border-bottom:1px dashed transparent;background:transparent;
+      font-size:20px;font-weight:800;color:var(--text);outline:none
+    }
+    .name-wrap input:focus{border-bottom-color:var(--accent)}
+    .sub{font-size:12px;color:var(--muted);margin-top:4px}
+    .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:14px}
+    .card{
+      background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px
+    }
+    .card h3{margin:0 0 12px;font-size:16px}
+    .timer-box{text-align:center}
+    .timer{
+      font-size:52px;line-height:1;font-weight:900;letter-spacing:1px;margin:18px 0 12px
+    }
+    .mode-row{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+    .mode-row button.active{background:#2f2d2a;color:white}
+    .timer-actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:14px}
+    .preset-row{
+      display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;color:var(--muted);font-size:13px
+    }
+    .preset-row input{width:64px;padding:7px 8px;border:1px solid var(--line);border-radius:10px;text-align:center}
+    .progress{
+      height:10px;background:#f2ede7;border-radius:999px;overflow:hidden;margin-top:14px
+    }
+    .progress > div{height:100%;background:linear-gradient(90deg,var(--accent),#ffc58f);width:0%}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .stat{background:#fffaf5;border:1px solid var(--line);padding:10px;border-radius:14px;text-align:center}
+    .stat b{display:block;font-size:20px}
+    .stat span{font-size:11px;color:var(--muted)}
+    .task-form{display:grid;grid-template-columns:1fr auto;gap:8px}
+    .task-form input{padding:10px 12px;border:1px solid var(--line);border-radius:12px;outline:none}
+    .task-list{display:flex;flex-direction:column;gap:8px;margin-top:12px;max-height:205px;overflow:auto}
+    .task{
+      display:flex;align-items:center;gap:9px;padding:9px 10px;border:1px solid var(--line);border-radius:12px
+    }
+    .task.done .task-text{text-decoration:line-through;color:#9b958e}
+    .task-text{flex:1;min-width:0;overflow-wrap:anywhere}
+    .task small{color:var(--muted)}
+    .task button{padding:5px 8px;border-radius:8px;font-size:12px}
+    .reward-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .reward-head small{color:var(--muted)}
+    .dog-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:12px}
+    .dog{
+      aspect-ratio:1;border-radius:16px;border:1px solid var(--line);background:#fffaf5;
+      display:grid;place-items:center;position:relative;overflow:hidden
+    }
+    .dog.locked{filter:grayscale(1);opacity:.28}
+    .dog .emoji{font-size:30px}
+    .dog .badge{
+      position:absolute;right:4px;bottom:4px;font-size:9px;background:#2f2d2a;color:white;
+      border-radius:8px;padding:2px 5px
+    }
+    .milestone{
+      margin-top:10px;padding:10px 12px;border-radius:12px;background:#fff7d8;border:1px solid #f1dfa4;
+      font-size:13px
+    }
+    .footer-note{text-align:center;color:var(--muted);font-size:12px;margin-top:18px}
+    .toast{
+      position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);
+      background:#2f2d2a;color:white;padding:11px 16px;border-radius:12px;opacity:0;pointer-events:none;
+      transition:.25s;z-index:50
+    }
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    @media (max-width:1050px){.grid{grid-template-columns:1fr}.dog-grid{grid-template-columns:repeat(7,1fr)}}
+    @media (max-width:780px){.board{grid-template-columns:1fr}.app{padding:16px}.dog-grid{grid-template-columns:repeat(5,1fr)}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="brand">
+        <h1>🐾 双人学习小狗番茄钟</h1>
+        <p>两个人在同一台电脑上各自计时、记任务、攒专注时长并收集小狗。</p>
+      </div>
+      <div class="top-actions">
+        <button class="ghost" onclick="exportData()">导出进度</button>
+        <button class="ghost" onclick="document.getElementById('importFile').click()">导入进度</button>
+        <input id="importFile" type="file" accept=".json" hidden onchange="importData(event)">
+        <button onclick="resetAll()">重置全部</button>
+      </div>
+    </div>
+
+    <div id="board" class="board"></div>
+    <div class="footer-note">数据只保存在当前浏览器的 localStorage 中。关闭网页后再次打开，进度仍会保留。</div>
+  </div>
+  <div id="toast" class="toast"></div>
+
+<script>
+const DOGS = [
+  ["🐶","奶油"],["🐕","柴柴"],["🐩","卷卷"],["🦮","金金"],["🐕‍🦺","勇勇"],
+  ["🐶","豆豆"],["🐕","可可"],["🐩","棉花"],["🦮","布丁"],["🐕‍🦺","星星"],
+  ["🐶","团子"],["🐕","麦麦"],["🐩","雪球"],["🦮","柚子"],["🐕‍🦺","露露"]
+];
+const STORAGE_KEY = "duo-dog-pomodoro-v1";
+
+function defaultUser(name, avatar){
+  return {
+    name, avatar, focusMin:25, breakMin:5, mode:"focus",
+    remaining:25*60, running:false, endAt:null,
+    completedSessions:0, focusedMinutes:0, tasks:[],
+    selectedDog:0, rewardEvery:3
+  };
+}
+let state = loadState() || {
+  users:[defaultUser("用户 A","🐶"), defaultUser("用户 B","🐕")],
+  version:1
+};
+let tickHandle = null;
+
+function loadState(){
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e){ return null; }
+}
+function saveState(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+function h(s=""){
+  return String(s).replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));
+}
+function fmt(sec){
+  sec = Math.max(0, Math.ceil(sec));
+  const m = Math.floor(sec/60), s = sec%60;
+  return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+}
+function earnedDogs(u){
+  return Math.min(DOGS.length, Math.floor(u.completedSessions / Math.max(1,u.rewardEvery)));
+}
+function nextRewardText(u){
+  const every = Math.max(1,u.rewardEvery);
+  const next = (Math.floor(u.completedSessions/every)+1)*every;
+  const left = next - u.completedSessions;
+  if(earnedDogs(u) >= DOGS.length) return "你已经收集完全部小狗！";
+  return `再完成 ${left} 个专注番茄，即可解锁下一只小狗。`;
+}
+function render(){
+  const board = document.getElementById("board");
+  board.innerHTML = state.users.map((u,i)=>userHTML(u,i)).join("");
+  updateDynamic();
+}
+function userHTML(u,i){
+  const total = u.mode==="focus" ? u.focusMin*60 : u.breakMin*60;
+  const pct = total ? (1-u.remaining/total)*100 : 0;
+  return `
+  <section class="user" data-user="${i}">
+    <div class="user-head">
+      <div class="identity">
+        <div class="avatar">${u.avatar}</div>
+        <div class="name-wrap">
+          <input value="${h(u.name)}" oninput="renameUser(${i},this.value)" aria-label="用户名">
+          <div class="sub">${i===0?"左侧用户":"右侧用户"} · 本地独立记录</div>
+        </div>
+      </div>
+      <button onclick="cycleAvatar(${i})">换头像</button>
+    </div>
+
+    <div class="grid">
+      <div class="card timer-box">
+        <h3>番茄钟</h3>
+        <div class="mode-row">
+          <button class="${u.mode==="focus"?"active":""}" onclick="setMode(${i},'focus')">专注</button>
+          <button class="${u.mode==="break"?"active":""}" onclick="setMode(${i},'break')">休息</button>
+        </div>
+        <div class="timer" id="timer-${i}">${fmt(u.remaining)}</div>
+        <div class="progress"><div id="progress-${i}" style="width:${pct}%"></div></div>
+        <div class="timer-actions">
+          <button class="primary" onclick="toggleTimer(${i})">${u.running?"暂停":"开始"}</button>
+          <button onclick="resetTimer(${i})">重置</button>
+          <button class="green" onclick="finishNow(${i})">完成本轮</button>
+        </div>
+        <div class="preset-row">
+          专注 <input type="number" min="1" max="180" value="${u.focusMin}" onchange="setMinutes(${i},'focusMin',this.value)"> 分钟
+          · 休息 <input type="number" min="1" max="60" value="${u.breakMin}" onchange="setMinutes(${i},'breakMin',this.value)"> 分钟
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>学习统计</h3>
+        <div class="stats">
+          <div class="stat"><b>${u.completedSessions}</b><span>完成番茄</span></div>
+          <div class="stat"><b>${u.focusedMinutes}</b><span>专注分钟</span></div>
+          <div class="stat"><b>${earnedDogs(u)}</b><span>已收集小狗</span></div>
+        </div>
+        <div class="milestone">${nextRewardText(u)}</div>
+        <div class="preset-row" style="justify-content:flex-start;margin-top:10px">
+          每完成
+          <input type="number" min="1" max="20" value="${u.rewardEvery}" onchange="setRewardEvery(${i},this.value)">
+          个专注番茄，解锁 1 只小狗
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>学习任务</h3>
+        <div class="task-form">
+          <input id="task-input-${i}" placeholder="例如：背单词 30 个" onkeydown="if(event.key==='Enter')addTask(${i})">
+          <button class="primary" onclick="addTask(${i})">添加</button>
+        </div>
+        <div class="task-list">
+          ${u.tasks.length ? u.tasks.map((t,ti)=>`
+            <div class="task ${t.done?"done":""}">
+              <input type="checkbox" ${t.done?"checked":""} onchange="toggleTask(${i},${ti})">
+              <div class="task-text">${h(t.text)}</div>
+              <small>${t.done?"完成":"进行中"}</small>
+              <button onclick="deleteTask(${i},${ti})">删除</button>
+            </div>`).join("") : `<div class="sub">还没有任务。添加一个今天要完成的学习任务。</div>`}
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="reward-head">
+          <h3 style="margin:0">小狗收藏册</h3>
+          <small>${earnedDogs(u)}/${DOGS.length}</small>
+        </div>
+        <div class="dog-grid">
+          ${DOGS.map((d,di)=>{
+            const unlocked = di < earnedDogs(u);
+            return `<div class="dog ${unlocked?"":"locked"}" title="${unlocked?d[1]:"未解锁"}">
+              <div class="emoji">${d[0]}</div>
+              <div class="badge">${unlocked?d[1]:"🔒"}</div>
+            </div>`;
+          }).join("")}
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function renameUser(i,v){ state.users[i].name=v; saveState(); }
+function cycleAvatar(i){
+  const icons=["🐶","🐕","🐩","🦮","🐕‍🦺","🐾"];
+  const idx = icons.indexOf(state.users[i].avatar);
+  state.users[i].avatar = icons[(idx+1)%icons.length];
+  saveState(); render();
+}
+function setMode(i,mode){
+  const u=state.users[i];
+  u.running=false; u.endAt=null; u.mode=mode;
+  u.remaining=(mode==="focus"?u.focusMin:u.breakMin)*60;
+  saveState(); render();
+}
+function setMinutes(i,key,v){
+  const u=state.users[i], n=Math.max(1,Math.min(key==="focusMin"?180:60,parseInt(v)||1));
+  u[key]=n;
+  if((key==="focusMin"&&u.mode==="focus") || (key==="breakMin"&&u.mode==="break")){
+    u.running=false; u.endAt=null; u.remaining=n*60;
+  }
+  saveState(); render();
+}
+function setRewardEvery(i,v){
+  state.users[i].rewardEvery=Math.max(1,Math.min(20,parseInt(v)||1));
+  saveState(); render();
+}
+function toggleTimer(i){
+  const u=state.users[i];
+  if(u.running){
+    u.remaining=Math.max(0,Math.ceil((u.endAt-Date.now())/1000));
+    u.running=false;u.endAt=null;
+  }else{
+    if(u.remaining<=0) u.remaining=(u.mode==="focus"?u.focusMin:u.breakMin)*60;
+    u.running=true;u.endAt=Date.now()+u.remaining*1000;
+  }
+  saveState(); render();
+}
+function resetTimer(i){
+  const u=state.users[i];
+  u.running=false;u.endAt=null;
+  u.remaining=(u.mode==="focus"?u.focusMin:u.breakMin)*60;
+  saveState(); render();
+}
+function finishNow(i){ completeRound(i,true); }
+function completeRound(i,manual=false){
+  const u=state.users[i];
+  const wasFocus=u.mode==="focus";
+  u.running=false;u.endAt=null;
+  if(wasFocus){
+    const before=earnedDogs(u);
+    u.completedSessions+=1;
+    u.focusedMinutes+=u.focusMin;
+    const after=earnedDogs(u);
+    if(after>before && after<=DOGS.length){
+      toast(`${u.name} 解锁了新小狗：${DOGS[after-1][1]} ${DOGS[after-1][0]}`);
+    }else{
+      toast(`${u.name} 完成了一个专注番茄。`);
+    }
+    u.mode="break";u.remaining=u.breakMin*60;
+  }else{
+    toast(`${u.name} 休息结束，准备下一轮专注。`);
+    u.mode="focus";u.remaining=u.focusMin*60;
+  }
+  saveState(); render();
+}
+function addTask(i){
+  const input=document.getElementById(`task-input-${i}`);
+  const text=input.value.trim();
+  if(!text) return;
+  state.users[i].tasks.unshift({text,done:false,createdAt:Date.now()});
+  saveState(); render();
+}
+function toggleTask(i,ti){
+  state.users[i].tasks[ti].done=!state.users[i].tasks[ti].done;
+  saveState(); render();
+}
+function deleteTask(i,ti){
+  state.users[i].tasks.splice(ti,1);saveState();render();
+}
+function updateDynamic(){
+  state.users.forEach((u,i)=>{
+    if(u.running && u.endAt){
+      u.remaining=Math.max(0,Math.ceil((u.endAt-Date.now())/1000));
+      const total=(u.mode==="focus"?u.focusMin:u.breakMin)*60;
+      const timer=document.getElementById(`timer-${i}`);
+      const progress=document.getElementById(`progress-${i}`);
+      if(timer) timer.textContent=fmt(u.remaining);
+      if(progress) progress.style.width=`${Math.min(100,Math.max(0,(1-u.remaining/total)*100))}%`;
+      if(u.remaining<=0) completeRound(i);
+    }
+  });
+}
+function startTicker(){
+  if(tickHandle) clearInterval(tickHandle);
+  tickHandle=setInterval(()=>{ updateDynamic(); saveState(); },250);
+}
+function toast(msg){
+  const el=document.getElementById("toast");
+  el.textContent=msg;el.classList.add("show");
+  setTimeout(()=>el.classList.remove("show"),2400);
+}
+function exportData(){
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="双人学习小狗番茄钟-进度.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function importData(e){
+  const f=e.target.files[0]; if(!f)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const data=JSON.parse(reader.result);
+      if(!data.users || data.users.length!==2) throw new Error("格式不正确");
+      state=data;saveState();render();toast("进度已导入");
+    }catch(err){alert("导入失败：文件格式不正确");}
+    e.target.value="";
+  };
+  reader.readAsText(f);
+}
+function resetAll(){
+  if(!confirm("确定要清空两位用户的所有任务、计时和小狗收集进度吗？")) return;
+  state={users:[defaultUser("用户 A","🐶"),defaultUser("用户 B","🐕")],version:1};
+  saveState();render();toast("已重置全部进度");
+}
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden) updateDynamic(); });
+render(); startTicker();
+</script>
+</body>
+</html>
