@@ -54,13 +54,27 @@
     .gate h2{margin:0 0 8px;font-size:25px}
     .gate p{margin:0 0 20px;color:var(--muted);font-size:14px;line-height:1.6}
     .gate .room{display:inline-block;margin-bottom:16px;padding:7px 11px;background:#fff7d8;border:1px solid #f1dfa4;border-radius:999px;font-size:13px}
-    .gate input{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:13px;outline:none;margin-bottom:10px}
+    .gate input{
+      width:100%;
+      padding:13px 14px;
+      border:1px solid var(--line);
+      border-radius:13px;
+      outline:none;
+      margin-bottom:10px
+    }
     .gate input:focus{border-color:var(--accent)}
     .gate button{width:100%;padding:12px}
     .gate-error{min-height:20px;margin-top:10px;color:#c44;font-size:13px}
 
     .board{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-    .user{background:rgba(255,255,255,.88);border:1px solid var(--line);border-radius:24px;padding:20px;box-shadow:var(--shadow);min-width:0}
+    .user{
+      background:rgba(255,255,255,.88);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:20px;
+      box-shadow:var(--shadow);
+      min-width:0
+    }
     .user-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
     .identity{display:flex;align-items:center;gap:12px;min-width:0}
     .avatar{width:52px;height:52px;border-radius:18px;display:grid;place-items:center;background:#fff1e7;border:1px solid var(--line);font-size:30px}
@@ -99,154 +113,97 @@
     .pet-head small{color:var(--muted)}
 
     .park-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
-    .park-chip{background:#fffaf5;border:1px solid var(--line);padding:10px;border-radius:14px;text-align:center}
+    .park-chip{
+      background:#fffaf5;border:1px solid var(--line);padding:10px;border-radius:14px;text-align:center
+    }
     .park-chip b{display:block;font-size:20px}
     .park-chip span{font-size:11px;color:var(--muted)}
 
     .park-scene{
       position:relative;
       overflow:hidden;
-      border-radius:24px;
+      border-radius:20px;
       border:1px solid #b9dfd1;
-      min-height:350px;
-      padding:16px;
       background:
-        linear-gradient(180deg,#dff5ff 0 58%, #98d67d 58% 100%);
+        radial-gradient(circle at 20% 18%, rgba(255,255,255,.95) 0 28px, transparent 29px),
+        radial-gradient(circle at 32% 20%, rgba(255,255,255,.95) 0 22px, transparent 23px),
+        radial-gradient(circle at 82% 14%, rgba(255,255,255,.95) 0 24px, transparent 25px),
+        linear-gradient(180deg,#dff5ff 0 52%, #bfe8a6 52% 100%);
+      min-height:270px;
+      padding:18px 16px 16px;
     }
-    .sun{
-      position:absolute;right:24px;top:20px;width:76px;height:76px;border-radius:50%;
-      background:radial-gradient(circle at 35% 35%,#fff8b0 0 12px,#ffd75d 13px 100%);
-      box-shadow:0 0 0 10px rgba(255,215,93,.18)
-    }
-    .cloud{position:absolute;background:rgba(255,255,255,.94);border-radius:30px;height:26px}
-    .cloud:before,.cloud:after{content:"";position:absolute;background:inherit;border-radius:50%}
-    .cloud:before{width:28px;height:28px;left:10px;top:-12px}
-    .cloud:after{width:34px;height:34px;left:34px;top:-16px}
-    .cloud.c1{left:28px;top:24px;width:90px}
-    .cloud.c2{left:132px;top:48px;width:84px;transform:scale(.92)}
-    .cloud.c3{right:118px;top:72px;width:76px;transform:scale(.82)}
-    .tree{position:absolute;bottom:102px;width:52px;height:92px}
-    .tree:before{content:"";position:absolute;left:18px;bottom:0;width:14px;height:46px;background:#8a5d3c;border-radius:10px}
-    .tree:after{content:"";position:absolute;left:0;top:0;width:52px;height:52px;background:#63b26a;border-radius:50%;box-shadow:18px 10px 0 0 #78c176,-12px 12px 0 0 #5aa75f}
-    .tree.t1{left:18px}.tree.t2{right:26px;transform:scale(1.05)}
-    .bench{position:absolute;left:50%;transform:translateX(-50%);bottom:134px;width:78px;height:16px;background:#d29c62;border-radius:10px;box-shadow:0 16px 0 0 #bf8550}
-    .bench:before,.bench:after{content:"";position:absolute;bottom:-18px;width:6px;height:24px;background:#926947;border-radius:4px}
-    .bench:before{left:12px}.bench:after{right:12px}
-    .path{
-      position:absolute;left:50%;transform:translateX(-50%);bottom:-48px;width:280px;height:180px;
-      background:#d8c4a0;border-radius:50%;opacity:.85
-    }
-    .path:after{
-      content:"";position:absolute;left:50%;top:18px;transform:translateX(-50%);width:208px;height:138px;
-      border:2px dashed rgba(149,110,77,.5);border-radius:50%
-    }
-    .paw-trail{position:absolute;left:0;right:0;bottom:86px;height:34px;pointer-events:none}
-    .paw{position:absolute;font-size:14px;opacity:.32}
-    .paw.p1{left:30%}.paw.p2{left:36%;bottom:8px}.paw.p3{left:44%}.paw.p4{left:51%;bottom:6px}.paw.p5{left:58%}
-
     .park-banner{
-      position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:10px;
-      margin-bottom:12px;padding:8px 10px;background:rgba(255,255,255,.78);
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      margin-bottom:10px;padding:8px 10px;background:rgba(255,255,255,.78);
       border:1px solid rgba(255,255,255,.7);border-radius:14px
     }
     .park-banner .title{font-weight:800}
     .park-banner .hint{font-size:12px;color:var(--muted)}
-
     .park-list{
-      position:relative;z-index:2;display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));
-      gap:12px;align-items:end;margin-top:108px
+      display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;position:relative;z-index:1
     }
     .park-dog{
-      min-height:148px;border-radius:18px;padding:10px 8px 8px;background:rgba(255,255,255,.9);
-      border:1px solid #dcefd4;text-align:center;box-shadow:0 8px 16px rgba(95,127,77,.08);
-      animation:bob var(--dur,2.8s) ease-in-out infinite;animation-delay:var(--delay,0s)
+      width:92px;min-height:106px;border-radius:18px;padding:10px 8px 8px;
+      background:rgba(255,255,255,.9);border:1px solid #dcefd4;text-align:center;
+      box-shadow:0 8px 16px rgba(95,127,77,.08);
+      animation:bob var(--dur,2.8s) ease-in-out infinite;
+      animation-delay:var(--delay,0s)
     }
-    .park-dog.today{background:#fff5d8;border-color:#f0d27a;box-shadow:0 10px 20px rgba(232,177,78,.18)}
+    .park-dog.today{
+      background:#fff5d8;
+      border-color:#f0d27a;
+      box-shadow:0 10px 20px rgba(232,177,78,.18)
+    }
+    .park-dog .emoji{font-size:34px;line-height:1}
     .park-dog .name{font-size:12px;font-weight:700;margin-top:6px}
-    .park-dog .activity{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.35}
-    .park-dog .badge{display:inline-block;margin-top:6px;padding:2px 6px;border-radius:999px;background:#2f2d2a;color:#fff;font-size:10px}
-    .park-empty{
-      position:relative;z-index:2;display:grid;place-items:center;min-height:175px;text-align:center;
-      color:var(--muted);background:rgba(255,255,255,.45);
-      border:1px dashed rgba(93,70,44,.2);border-radius:18px;padding:18px;margin-top:96px
+    .park-dog .activity{font-size:11px;color:var(--muted);margin-top:4px}
+    .park-dog .badge{
+      display:inline-block;margin-top:6px;padding:2px 6px;border-radius:999px;
+      background:#2f2d2a;color:#fff;font-size:10px
     }
-    .today-strip{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-    .today-pill{padding:6px 10px;border-radius:999px;background:#fff1e7;border:1px solid var(--line);font-size:12px}
+    .park-empty{
+      display:grid;place-items:center;min-height:175px;text-align:center;
+      color:var(--muted);background:rgba(255,255,255,.45);
+      border:1px dashed rgba(93,70,44,.2);border-radius:18px;padding:18px
+    }
+    .today-strip{
+      display:flex;flex-wrap:wrap;gap:8px;margin-top:12px
+    }
+    .today-pill{
+      padding:6px 10px;border-radius:999px;background:#fff1e7;border:1px solid var(--line);
+      font-size:12px
+    }
 
     .rescue-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
     .rescue-dog{
-      border-radius:16px;border:1px solid var(--line);background:#fffaf5;
-      display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
-      text-align:center;padding:12px 10px 28px;position:relative;overflow:hidden;min-height:170px
+      aspect-ratio:1/1.15;border-radius:16px;border:1px solid var(--line);
+      background:#fffaf5;display:flex;flex-direction:column;align-items:center;justify-content:center;
+      text-align:center;padding:10px;position:relative;overflow:hidden
     }
-    .rescue-dog.locked{filter:grayscale(1);opacity:.58}
+    .rescue-dog.locked{filter:grayscale(1);opacity:.5}
     .rescue-dog.unlocked{border-color:#f0d27a;background:#fffaf0}
-    .rescue-dog .name{font-size:12px;font-weight:700;margin-top:8px;line-height:1.25}
-    .rescue-dog .status{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);padding:3px 7px;border-radius:999px;font-size:10px;white-space:nowrap}
+    .rescue-dog .emoji{font-size:32px;line-height:1}
+    .rescue-dog .name{font-size:12px;font-weight:700;margin-top:8px}
+    .rescue-dog .status{
+      position:absolute;bottom:6px;left:50%;transform:translateX(-50%);
+      padding:3px 7px;border-radius:999px;font-size:10px;white-space:nowrap
+    }
     .rescue-dog.locked .status{background:#ece7df;color:#6e655b}
     .rescue-dog.unlocked .status{background:#2f2d2a;color:#fff}
     .rescue-legend{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:10px;color:var(--muted);font-size:12px}
 
-    .dog-art{
-      --coat1:#d6ab72; --coat2:#fff6ea; --accent:#4c3429; --patch:none; --ear-size:20px;
-      position:relative;width:62px;height:70px;margin:0 auto;
-    }
-    .dog-art .body{
-      position:absolute;left:13px;bottom:0;width:36px;height:28px;background:var(--coat1);
-      border-radius:16px 16px 14px 14px;border:2px solid rgba(76,52,41,.12)
-    }
-    .dog-art .chest{
-      position:absolute;left:20px;bottom:5px;width:22px;height:18px;background:var(--coat2);
-      border-radius:12px 12px 10px 10px;opacity:.95
-    }
-    .dog-art .head{
-      position:absolute;left:15px;top:8px;width:32px;height:28px;background:var(--coat1);
-      border-radius:15px 15px 13px 13px;border:2px solid rgba(76,52,41,.12);z-index:2
-    }
-    .dog-art .ear,.dog-art .ear:before{
-      position:absolute;content:"";top:-5px;width:12px;height:18px;background:var(--ear-color,var(--coat1));z-index:1
-    }
-    .dog-art .ear.left{left:1px;border-radius:8px 8px 2px 12px;transform:rotate(-16deg)}
-    .dog-art .ear.right{right:1px;border-radius:8px 8px 12px 2px;transform:rotate(16deg)}
-    .dog-art.floppy .ear.left{height:22px;left:0;top:-1px;border-radius:12px 12px 8px 14px;transform:rotate(-10deg)}
-    .dog-art.floppy .ear.right{height:22px;right:0;top:-1px;border-radius:12px 12px 14px 8px;transform:rotate(10deg)}
-    .dog-art.pointy .ear.left,.dog-art.pointy .ear.right{height:19px;width:10px;top:-8px}
-    .dog-art.round .head{border-radius:50%}
-    .dog-art.long .body{width:42px;left:10px;border-radius:16px}
-    .dog-art.short .body{height:24px;bottom:2px}
-    .dog-art.stocky .body{width:40px;height:26px;left:11px}
-    .dog-art.fluffy .head,.dog-art.fluffy .body{box-shadow:0 0 0 4px rgba(255,255,255,.16) inset}
-    .dog-art .face{
-      position:absolute;left:7px;top:9px;width:18px;height:14px;background:var(--coat2);
-      border-radius:10px;z-index:3
-    }
-    .dog-art .eye{
-      position:absolute;top:10px;width:3px;height:3px;background:#322622;border-radius:50%;z-index:4
-    }
-    .dog-art .eye.left{left:9px}.dog-art .eye.right{right:9px}
-    .dog-art .nose{position:absolute;left:50%;top:17px;transform:translateX(-50%);width:6px;height:5px;background:#322622;border-radius:50%;z-index:4}
-    .dog-art .patch{
-      position:absolute;z-index:3;left:4px;top:4px;width:12px;height:12px;background:var(--patch,transparent);
-      border-radius:50%;opacity:.95
-    }
-    .dog-art .tail{
-      position:absolute;right:4px;bottom:14px;width:16px;height:5px;background:var(--coat1);
-      border-radius:8px;transform:rotate(28deg);transform-origin:left center
-    }
-    .dog-art.curly .tail{width:14px;height:14px;border:4px solid var(--coat1);background:transparent;border-left-color:transparent;border-bottom-color:transparent;border-radius:50%;right:1px;bottom:15px;transform:rotate(38deg)}
-    .dog-art.husky .face{background:#fff}
-    .dog-art.husky .patch{width:24px;height:10px;left:4px;top:4px;border-radius:10px 10px 4px 4px}
-    .dog-art.mask .patch{width:20px;height:13px;left:6px;top:6px;border-radius:10px}
-    .dog-art .paw1,.dog-art .paw2{
-      position:absolute;bottom:-2px;width:8px;height:14px;background:var(--coat2);border-radius:8px;z-index:0
-    }
-    .dog-art .paw1{left:18px}.dog-art .paw2{right:18px}
-
     .footer-note{text-align:center;color:var(--muted);font-size:12px;margin-top:18px}
-    .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#2f2d2a;color:#fff;padding:11px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;z-index:50}
+    .toast{
+      position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);
+      background:#2f2d2a;color:#fff;padding:11px 16px;border-radius:12px;opacity:0;
+      pointer-events:none;transition:.25s;z-index:50
+    }
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
     .loading{padding:60px 20px;text-align:center;color:var(--muted);grid-column:1/-1}
-    @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+    @keyframes bob{
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(-7px)}
+    }
     @media(max-width:1180px){
       .grid{grid-template-columns:1fr}
       .rescue-grid{grid-template-columns:repeat(5,1fr)}
@@ -256,12 +213,10 @@
       .app{padding:16px}
       .rescue-grid{grid-template-columns:repeat(4,1fr)}
       .park-summary{grid-template-columns:1fr 1fr 1fr}
-      .park-list{grid-template-columns:repeat(auto-fit,minmax(84px,1fr))}
     }
     @media(max-width:560px){
       .rescue-grid{grid-template-columns:repeat(3,1fr)}
-      .dog-art{transform:scale(.92)}
-      .park-scene{min-height:320px}
+      .park-dog{width:84px}
     }
   </style>
 </head>
@@ -311,31 +266,31 @@ const ROOM_CODE = "DOG2026";
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const DOG_BREEDS = [
-  {name:"泰迪",emoji:"🐩",className:"floppy curly short",coat1:"#a86a3f",coat2:"#f0d0ad",earColor:"#9a5e36"},
-  {name:"边境牧羊犬",emoji:"🐕",className:"floppy long",coat1:"#2e2e32",coat2:"#ffffff",patch:"#ffffff",earColor:"#1e1e22"},
-  {name:"金毛猎犬",emoji:"🦮",className:"floppy long",coat1:"#dcb169",coat2:"#f7e4c1",earColor:"#c7964a"},
-  {name:"德国牧羊犬",emoji:"🐕‍🦺",className:"pointy long",coat1:"#b88a58",coat2:"#2f2928",patch:"#2f2928",earColor:"#2f2928"},
-  {name:"哈士奇",emoji:"🐕",className:"pointy husky",coat1:"#7f8fa3",coat2:"#ffffff",patch:"#5a6775",earColor:"#5a6775"},
-  {name:"巴哥犬",emoji:"🐶",className:"floppy round stocky",coat1:"#d7bc98",coat2:"#3b2e2a",patch:"#3b2e2a",earColor:"#3b2e2a"},
-  {name:"拉布拉多犬",emoji:"🦮",className:"floppy long",coat1:"#e1c279",coat2:"#f8edd4",earColor:"#cda85d"},
-  {name:"萨摩耶",emoji:"🐶",className:"pointy fluffy curly",coat1:"#ffffff",coat2:"#f5f5f5",earColor:"#ececec"},
-  {name:"苏牧",emoji:"🐕",className:"floppy fluffy long",coat1:"#b55f35",coat2:"#fff0da",earColor:"#7f4322"},
-  {name:"贵宾",emoji:"🐩",className:"floppy curly",coat1:"#d7d7d7",coat2:"#f3f3f3",earColor:"#c8c8c8"},
-  {name:"米格鲁猎犬",emoji:"🐶",className:"floppy long",coat1:"#9a5a34",coat2:"#fff8ec",patch:"#2f2f2f",earColor:"#5a321d"},
-  {name:"古牧",emoji:"🐶",className:"floppy fluffy",coat1:"#8e8e95",coat2:"#ffffff",patch:"#ffffff",earColor:"#7e7e85"},
-  {name:"松狮",emoji:"🐶",className:"pointy fluffy round",coat1:"#eee6da",coat2:"#fff8ef",earColor:"#e4d8c6"},
-  {name:"沙皮",emoji:"🐶",className:"floppy short stocky",coat1:"#b79269",coat2:"#d6be9f",earColor:"#a27e55"},
-  {name:"圣伯纳犬",emoji:"🐶",className:"floppy stocky",coat1:"#a86442",coat2:"#fff8ef",patch:"#6b3e2a",earColor:"#6b3e2a"},
-  {name:"雪纳瑞",emoji:"🐶",className:"pointy",coat1:"#66676d",coat2:"#ececec",patch:"#ececec",earColor:"#4d4f54"},
-  {name:"查尔斯王",emoji:"🐶",className:"floppy",coat1:"#ffffff",coat2:"#fff4ea",patch:"#8a4f2f",earColor:"#8a4f2f"},
-  {name:"英国斗牛犬",emoji:"🐶",className:"floppy round stocky short",coat1:"#9c5a39",coat2:"#ffffff",patch:"#ffffff",earColor:"#7a462d"},
-  {name:"比熊",emoji:"🐶",className:"floppy fluffy round",coat1:"#ffffff",coat2:"#f7f7f7",earColor:"#f4f4f4"},
-  {name:"柴犬",emoji:"🐕",className:"pointy curly",coat1:"#cf8650",coat2:"#fff2df",earColor:"#b46736"},
-  {name:"法斗",emoji:"🐶",className:"pointy stocky short mask",coat1:"#2f3136",coat2:"#ffffff",patch:"#ffffff",earColor:"#222429"},
-  {name:"马尔济斯",emoji:"🐶",className:"floppy fluffy",coat1:"#ffffff",coat2:"#fdfdfd",earColor:"#efefef"},
-  {name:"柯基",emoji:"🐕",className:"pointy curly short long",coat1:"#c98349",coat2:"#fff2e0",earColor:"#a56234"},
-  {name:"蝴蝶犬",emoji:"🐶",className:"pointy",coat1:"#ffffff",coat2:"#fff6ed",patch:"#5f3724",earColor:"#5f3724"},
-  {name:"吉娃娃",emoji:"🐶",className:"pointy short",coat1:"#d4b08c",coat2:"#fff2e2",earColor:"#b88e66"}
+  {name:"泰迪",emoji:"🐩"},
+  {name:"边境牧羊犬",emoji:"🐕"},
+  {name:"金毛猎犬",emoji:"🦮"},
+  {name:"德国牧羊犬",emoji:"🐕‍🦺"},
+  {name:"哈士奇",emoji:"🐕"},
+  {name:"巴哥犬",emoji:"🐶"},
+  {name:"拉布拉多犬",emoji:"🦮"},
+  {name:"萨摩耶",emoji:"🐶"},
+  {name:"苏牧",emoji:"🐕"},
+  {name:"贵宾",emoji:"🐩"},
+  {name:"米格鲁猎犬",emoji:"🐶"},
+  {name:"古牧",emoji:"🐶"},
+  {name:"松狮",emoji:"🐶"},
+  {name:"沙皮",emoji:"🐶"},
+  {name:"圣伯纳犬",emoji:"🐶"},
+  {name:"雪纳瑞",emoji:"🐶"},
+  {name:"查尔斯王",emoji:"🐶"},
+  {name:"英国斗牛犬",emoji:"🐶"},
+  {name:"比熊",emoji:"🐶"},
+  {name:"柴犬",emoji:"🐕"},
+  {name:"法斗",emoji:"🐶"},
+  {name:"马尔济斯",emoji:"🐶"},
+  {name:"柯基",emoji:"🐕"},
+  {name:"蝴蝶犬",emoji:"🐶"},
+  {name:"吉娃娃",emoji:"🐶"}
 ];
 
 const PARK_ACTIVITIES = [
@@ -409,23 +364,38 @@ async function joinRoom(){
   const btn = document.getElementById("joinBtn");
   const err = document.getElementById("gateError");
   const password = input.value.trim();
-  if(!password){ err.textContent = "请输入共享密码。"; return; }
+
+  if(!password){
+    err.textContent = "请输入共享密码。";
+    return;
+  }
+
   btn.disabled = true;
   btn.textContent = "正在验证…";
   err.textContent = "";
+
   try{
-    const {data,error} = await db.rpc("join_room",{ p_room_code: ROOM_CODE, p_access_token: password });
+    const {data,error} = await db.rpc("join_room",{
+      p_room_code: ROOM_CODE,
+      p_access_token: password
+    });
+
     if(error) throw error;
     roomId = data;
     input.value = "";
     await loadAll();
     subscribeRealtime();
+
   }catch(e){
     console.error(e);
     const msg = String(e.message||e);
-    if(msg.includes("Invalid room password")) err.textContent = "密码不正确。";
-    else if(msg.includes("Room not found")) err.textContent = "找不到这个房间。";
-    else err.textContent = "验证失败："+msg;
+    if(msg.includes("Invalid room password")){
+      err.textContent = "密码不正确。";
+    }else if(msg.includes("Room not found")){
+      err.textContent = "找不到这个房间。";
+    }else{
+      err.textContent = "验证失败："+msg;
+    }
   }finally{
     btn.disabled = false;
     btn.textContent = "进入学习空间";
@@ -437,6 +407,7 @@ async function boot(){
     setStatus("", "正在建立安全会话…");
     await ensureAnonymousSession();
     const existing = await findExistingMembership();
+
     if(existing){
       roomId = existing;
       await loadAll();
@@ -447,22 +418,31 @@ async function boot(){
   }catch(e){
     console.error(e);
     setStatus("error", "初始化失败");
-    document.getElementById("board").innerHTML = `<div class="loading">初始化失败：${h(e.message||e)}<br><br>请确认 Supabase 已开启 Anonymous Sign-Ins。</div>`;
+    document.getElementById("board").innerHTML =
+      `<div class="loading">
+        初始化失败：${h(e.message||e)}
+        <br><br>
+        请确认 Supabase 已开启 Anonymous Sign-Ins。
+      </div>`;
   }
 }
 
 async function loadAll(){
   try{
     if(!roomId) throw new Error("没有房间授权");
+
     const roomRes = await db.from("rooms").select("*").eq("id",roomId).single();
     if(roomRes.error) throw roomRes.error;
     room = roomRes.data;
+
     const profilesRes = await db.from("profiles").select("*").eq("room_id",roomId).order("slot");
     if(profilesRes.error) throw profilesRes.error;
     profiles = profilesRes.data || [];
+
     const tasksRes = await db.from("tasks").select("*").eq("room_id",roomId).order("created_at",{ascending:false});
     if(tasksRes.error) throw tasksRes.error;
     tasks = tasksRes.data || [];
+
     const start = new Date();
     start.setHours(0,0,0,0);
     const sessionsRes = await db.from("pomodoro_sessions")
@@ -472,6 +452,7 @@ async function loadAll(){
       .order("completed_at",{ascending:false});
     if(sessionsRes.error) throw sessionsRes.error;
     todaySessions = sessionsRes.data || [];
+
     showApp();
     setStatus("online", "已授权 · 云端已连接");
     render();
@@ -479,7 +460,8 @@ async function loadAll(){
     console.error(e);
     setStatus("error", "读取失败");
     document.getElementById("board").style.display = "grid";
-    document.getElementById("board").innerHTML = `<div class="loading">无法读取房间数据：${h(e.message||e)}</div>`;
+    document.getElementById("board").innerHTML =
+      `<div class="loading">无法读取房间数据：${h(e.message||e)}</div>`;
   }
 }
 
@@ -487,16 +469,28 @@ function timerFor(p){
   if(!timers[p.id]){
     const key = "dog-timer-"+p.id;
     let saved = null;
-    try{ saved = JSON.parse(localStorage.getItem(key)); }catch(e){}
-    timers[p.id] = saved || { mode:"focus", remaining:(p.focus_minutes||25)*60, running:false, endAt:null };
+    try{
+      saved = JSON.parse(localStorage.getItem(key));
+    }catch(e){}
+    timers[p.id] = saved || {
+      mode:"focus",
+      remaining:(p.focus_minutes||25)*60,
+      running:false,
+      endAt:null
+    };
   }
   return timers[p.id];
 }
 
-function saveTimer(p){ localStorage.setItem("dog-timer-"+p.id, JSON.stringify(timerFor(p))); }
+function saveTimer(p){
+  localStorage.setItem("dog-timer-"+p.id, JSON.stringify(timerFor(p)));
+}
 
 function totalUnlockedDogs(p){
-  return Math.min(DOG_BREEDS.length, Math.floor((p.completed_sessions||0) / Math.max(1,p.reward_every||3)));
+  return Math.min(
+    DOG_BREEDS.length,
+    Math.floor((p.completed_sessions||0) / Math.max(1,p.reward_every||3))
+  );
 }
 
 function nextRewardText(p){
@@ -507,7 +501,9 @@ function nextRewardText(p){
   return `再完成 ${next-(p.completed_sessions||0)} 个专注番茄，即可救助下一只小狗。`;
 }
 
-function todaySessionCount(profileId){ return todaySessions.filter(x=>x.profile_id===profileId).length; }
+function todaySessionCount(profileId){
+  return todaySessions.filter(x=>x.profile_id===profileId).length;
+}
 
 function todayUnlockedCount(p){
   const every = Math.max(1,p.reward_every||3);
@@ -517,7 +513,9 @@ function todayUnlockedCount(p){
   return Math.max(0, Math.floor(totalNow/every) - Math.floor(beforeToday/every));
 }
 
-function unlockedDogs(p){ return DOG_BREEDS.slice(0,totalUnlockedDogs(p)); }
+function unlockedDogs(p){
+  return DOG_BREEDS.slice(0,totalUnlockedDogs(p));
+}
 
 function todayUnlockedDogs(p){
   const count = todayUnlockedCount(p);
@@ -526,37 +524,24 @@ function todayUnlockedDogs(p){
   return DOG_BREEDS.slice(Math.max(0,total-count), total);
 }
 
-function dogTabFor(id){ if(!petTabs[id]) petTabs[id] = "park"; return petTabs[id]; }
-function setDogTab(id,tab){ petTabs[id] = tab; render(); }
+function dogTabFor(id){
+  if(!petTabs[id]) petTabs[id] = "park";
+  return petTabs[id];
+}
 
-function renderDogArt(dog){
-  return `
-    <div class="dog-art ${dog.className||''}" style="--coat1:${dog.coat1};--coat2:${dog.coat2};--patch:${dog.patch||'transparent'};--ear-color:${dog.earColor||dog.coat1}">
-      <div class="body"></div>
-      <div class="chest"></div>
-      <div class="tail"></div>
-      <div class="paw1"></div>
-      <div class="paw2"></div>
-      <div class="head">
-        <div class="ear left"></div>
-        <div class="ear right"></div>
-        <div class="patch"></div>
-        <div class="face"></div>
-        <div class="eye left"></div>
-        <div class="eye right"></div>
-        <div class="nose"></div>
-      </div>
-    </div>
-  `;
+function setDogTab(id,tab){
+  petTabs[id] = tab;
+  render();
 }
 
 function parkDogCard(dog,index,isToday){
   const activity = PARK_ACTIVITIES[index % PARK_ACTIVITIES.length];
   const delay = ((index%5)*0.24).toFixed(2);
   const dur = (2.4 + (index%4)*0.35).toFixed(2);
+
   return `
     <div class="park-dog ${isToday?"today":""}" style="--delay:${delay}s;--dur:${dur}s">
-      ${renderDogArt(dog)}
+      <div class="emoji">${dog.emoji}</div>
       <div class="name">${h(dog.name)}</div>
       <div class="activity">${activity}</div>
       ${isToday?'<div class="badge">今日新到</div>':''}
@@ -569,51 +554,91 @@ function renderDogZone(p){
   const rescued = unlockedDogs(p);
   const todayDogs = todayUnlockedDogs(p);
   const todayNames = new Set(todayDogs.map(x=>x.name));
+
   return `
     <div class="card">
       <div class="pet-head">
         <h3 style="margin:0">小狗乐园</h3>
         <small>如图犬种 · 共 ${DOG_BREEDS.length} 种</small>
       </div>
+
       <div class="pet-tabs">
         <button class="${tab==="park"?"active":""}" onclick="setDogTab('${p.id}','park')">狗狗公园</button>
         <button class="${tab==="rescue"?"active":""}" onclick="setDogTab('${p.id}','rescue')">待拯救的小狗</button>
       </div>
-      ${tab==="park" ? `
-        <div class="park-summary">
-          <div class="park-chip"><b>${rescued.length}</b><span>公园入住小狗</span></div>
-          <div class="park-chip"><b>${todayUnlockedCount(p)}</b><span>今日新解锁</span></div>
-          <div class="park-chip"><b>${todaySessionCount(p)}</b><span>今日完成番茄</span></div>
-        </div>
-        <div class="park-scene">
-          <div class="sun"></div>
-          <div class="cloud c1"></div>
-          <div class="cloud c2"></div>
-          <div class="cloud c3"></div>
-          <div class="tree t1"></div>
-          <div class="tree t2"></div>
-          <div class="bench"></div>
-          <div class="path"></div>
-          <div class="paw-trail"><span class="paw p1">🐾</span><span class="paw p2">🐾</span><span class="paw p3">🐾</span><span class="paw p4">🐾</span><span class="paw p5">🐾</span></div>
-          <div class="park-banner">
-            <div><div class="title">狗狗公园</div><div class="hint">草地、树荫、云朵和跑狗路线都准备好啦</div></div>
-            <div class="hint">${rescued.length}/${DOG_BREEDS.length} 已入住</div>
+
+      ${
+        tab==="park"
+        ? `
+          <div class="park-summary">
+            <div class="park-chip">
+              <b>${rescued.length}</b>
+              <span>公园入住小狗</span>
+            </div>
+            <div class="park-chip">
+              <b>${todayUnlockedCount(p)}</b>
+              <span>今日新解锁</span>
+            </div>
+            <div class="park-chip">
+              <b>${todaySessionCount(p)}</b>
+              <span>今日完成番茄</span>
+            </div>
           </div>
-          ${rescued.length ? `<div class="park-list">${rescued.map((dog,index)=>parkDogCard(dog,index,todayNames.has(dog.name))).join("")}</div>` : `<div class="park-empty"><div><div style="font-size:40px">🌳</div><div style="font-weight:700;margin-top:8px">公园还没有小狗入住</div><div style="margin-top:6px">${nextRewardText(p)}</div></div></div>`}
-        </div>
-        <div class="today-strip">
-          ${todayDogs.length ? todayDogs.map(d=>`<span class="today-pill">今日收集：${d.emoji} ${h(d.name)}</span>`).join("") : `<span class="today-pill">今日还没有新收集到小狗</span>`}
-        </div>
-      ` : `
-        <div class="rescue-legend"><span>已救助：${rescued.length} 只</span><span>待拯救：${DOG_BREEDS.length-rescued.length} 只</span></div>
-        <div class="rescue-grid">
-          ${DOG_BREEDS.map((dog,index)=>{
-            const ok = index < rescued.length;
-            return `<div class="rescue-dog ${ok?"unlocked":"locked"}" title="${ok?'已救助':'待拯救'}">${renderDogArt(dog)}<div class="name">${h(dog.name)}</div><div class="status">${ok?'已救助':'待拯救'}</div></div>`;
-          }).join("")}
-        </div>
-        <div class="milestone">${nextRewardText(p)}</div>
-      `}
+
+          <div class="park-scene">
+            <div class="park-banner">
+              <div>
+                <div class="title">狗狗公园</div>
+                <div class="hint">已经被你救助成功的小狗会在这里玩耍</div>
+              </div>
+              <div class="hint">${rescued.length}/${DOG_BREEDS.length} 已入住</div>
+            </div>
+
+            ${
+              rescued.length
+              ? `<div class="park-list">
+                  ${rescued.map((dog,index)=>parkDogCard(dog,index,todayNames.has(dog.name))).join("")}
+                </div>`
+              : `<div class="park-empty">
+                  <div>
+                    <div style="font-size:40px">🌳</div>
+                    <div style="font-weight:700;margin-top:8px">公园还没有小狗入住</div>
+                    <div style="margin-top:6px">${nextRewardText(p)}</div>
+                  </div>
+                </div>`
+            }
+          </div>
+
+          <div class="today-strip">
+            ${
+              todayDogs.length
+              ? todayDogs.map(d=>`<span class="today-pill">今日收集：${d.emoji} ${h(d.name)}</span>`).join("")
+              : `<span class="today-pill">今日还没有新收集到小狗</span>`
+            }
+          </div>
+        `
+        : `
+          <div class="rescue-legend">
+            <span>已救助：${rescued.length} 只</span>
+            <span>待拯救：${DOG_BREEDS.length-rescued.length} 只</span>
+          </div>
+
+          <div class="rescue-grid">
+            ${DOG_BREEDS.map((dog,index)=>{
+              const ok = index < rescued.length;
+              return `
+                <div class="rescue-dog ${ok?"unlocked":"locked"}" title="${ok?'已救助':'待拯救'}">
+                  <div class="emoji">${dog.emoji}</div>
+                  <div class="name">${h(dog.name)}</div>
+                  <div class="status">${ok?'已救助':'待拯救'}</div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+
+          <div class="milestone">${nextRewardText(p)}</div>
+        `
+      }
     </div>
   `;
 }
@@ -623,6 +648,7 @@ function userHTML(p){
   const total = (t.mode==="focus" ? (p.focus_minutes||25) : (p.break_minutes||5))*60;
   const pct = total ? (1 - t.remaining/total) * 100 : 0;
   const myTasks = tasks.filter(x=>x.profile_id===p.id);
+
   return `
     <section class="user">
       <div class="user-head">
@@ -635,6 +661,7 @@ function userHTML(p){
         </div>
         <button onclick="cycleAvatar('${p.id}')">换头像</button>
       </div>
+
       <div class="grid">
         <div class="card timer-box">
           <h3>番茄钟</h3>
@@ -642,39 +669,77 @@ function userHTML(p){
             <button class="${t.mode==="focus"?"active":""}" onclick="setMode('${p.id}','focus')">专注</button>
             <button class="${t.mode==="break"?"active":""}" onclick="setMode('${p.id}','break')">休息</button>
           </div>
+
           <div class="timer" id="timer-${p.id}">${fmt(t.remaining)}</div>
-          <div class="progress"><div id="progress-${p.id}" style="width:${pct}%"></div></div>
+
+          <div class="progress">
+            <div id="progress-${p.id}" style="width:${pct}%"></div>
+          </div>
+
           <div class="timer-actions">
             <button class="primary" onclick="toggleTimer('${p.id}')">${t.running?"暂停":"开始"}</button>
             <button onclick="resetTimer('${p.id}')">重置</button>
             <button class="green" onclick="finishNow('${p.id}')">完成本轮</button>
           </div>
+
           <div class="preset-row">
-            专注 <input type="number" min="1" max="180" value="${p.focus_minutes||25}" onchange="setMinutes('${p.id}','focus_minutes',this.value)"> 分钟 · 休息 <input type="number" min="1" max="60" value="${p.break_minutes||5}" onchange="setMinutes('${p.id}','break_minutes',this.value)"> 分钟
+            专注
+            <input type="number" min="1" max="180" value="${p.focus_minutes||25}" onchange="setMinutes('${p.id}','focus_minutes',this.value)">
+            分钟 · 休息
+            <input type="number" min="1" max="60" value="${p.break_minutes||5}" onchange="setMinutes('${p.id}','break_minutes',this.value)">
+            分钟
           </div>
         </div>
+
         <div class="card">
           <h3>学习统计</h3>
           <div class="stats">
-            <div class="stat"><b>${p.completed_sessions||0}</b><span>完成番茄</span></div>
-            <div class="stat"><b>${p.focused_minutes||0}</b><span>专注分钟</span></div>
-            <div class="stat"><b>${totalUnlockedDogs(p)}</b><span>已救助小狗</span></div>
+            <div class="stat">
+              <b>${p.completed_sessions||0}</b>
+              <span>完成番茄</span>
+            </div>
+            <div class="stat">
+              <b>${p.focused_minutes||0}</b>
+              <span>专注分钟</span>
+            </div>
+            <div class="stat">
+              <b>${totalUnlockedDogs(p)}</b>
+              <span>已救助小狗</span>
+            </div>
           </div>
+
           <div class="milestone">${nextRewardText(p)}</div>
+
           <div class="preset-row" style="justify-content:flex-start">
-            每完成 <input type="number" min="1" max="20" value="${p.reward_every||3}" onchange="setRewardEvery('${p.id}',this.value)"> 个专注番茄，解锁 1 只小狗
+            每完成
+            <input type="number" min="1" max="20" value="${p.reward_every||3}" onchange="setRewardEvery('${p.id}',this.value)">
+            个专注番茄，解锁 1 只小狗
           </div>
         </div>
+
         <div class="card">
           <h3>学习任务</h3>
           <div class="task-form">
             <input id="task-input-${p.id}" placeholder="例如：背单词 30 个" onkeydown="if(event.key==='Enter')addTask('${p.id}')">
             <button class="primary" onclick="addTask('${p.id}')">添加</button>
           </div>
+
           <div class="task-list">
-            ${myTasks.length ? myTasks.map(x=>`<div class="task ${x.completed?"done":""}"><input type="checkbox" ${x.completed?"checked":""} onchange="toggleTask('${x.id}',${!x.completed})"><div class="task-text">${h(x.text)}</div><small>${x.completed?"完成":"进行中"}</small><button onclick="deleteTask('${x.id}')">删除</button></div>`).join("") : `<div class="sub">还没有任务。添加一个学习任务。</div>`}
+            ${
+              myTasks.length
+              ? myTasks.map(x=>`
+                  <div class="task ${x.completed?"done":""}">
+                    <input type="checkbox" ${x.completed?"checked":""} onchange="toggleTask('${x.id}',${!x.completed})">
+                    <div class="task-text">${h(x.text)}</div>
+                    <small>${x.completed?"完成":"进行中"}</small>
+                    <button onclick="deleteTask('${x.id}')">删除</button>
+                  </div>
+                `).join("")
+              : `<div class="sub">还没有任务。添加一个学习任务。</div>`
+            }
           </div>
         </div>
+
         ${renderDogZone(p)}
       </div>
     </section>
@@ -682,11 +747,17 @@ function userHTML(p){
 }
 
 function render(){
-  document.getElementById("board").innerHTML = profiles.length ? profiles.map(userHTML).join("") : `<div class="loading">房间里没有找到用户。</div>`;
+  document.getElementById("board").innerHTML =
+    profiles.length
+      ? profiles.map(userHTML).join("")
+      : `<div class="loading">房间里没有找到用户。</div>`;
+
   updateDynamic();
 }
 
-function profileById(id){ return profiles.find(x=>x.id===id); }
+function profileById(id){
+  return profiles.find(x=>x.id===id);
+}
 
 async function renameUser(id,value){
   const v = value.trim();
@@ -700,75 +771,131 @@ async function cycleAvatar(id){
   const icons = ["🐶","🐕","🐩","🦮","🐕‍🦺","🐾"];
   const next = icons[(icons.indexOf(p.avatar)+1+icons.length)%icons.length];
   const {error} = await db.from("profiles").update({avatar:next}).eq("id",id);
-  if(error) toast("修改头像失败："+error.message); else await loadAll();
+  if(error){
+    toast("修改头像失败："+error.message);
+  }else{
+    await loadAll();
+  }
 }
 
 function setMode(id,mode){
   const p = profileById(id);
   const t = timerFor(p);
-  t.running = false; t.endAt = null; t.mode = mode;
+  t.running = false;
+  t.endAt = null;
+  t.mode = mode;
   t.remaining = (mode==="focus" ? (p.focus_minutes||25) : (p.break_minutes||5))*60;
-  saveTimer(p); render();
+  saveTimer(p);
+  render();
 }
 
 function toggleTimer(id){
   const p = profileById(id);
   const t = timerFor(p);
+
   if(t.running){
     t.remaining = Math.max(0, Math.ceil((t.endAt-Date.now())/1000));
-    t.running = false; t.endAt = null;
+    t.running = false;
+    t.endAt = null;
   }else{
-    if(t.remaining<=0) t.remaining = (t.mode==="focus" ? (p.focus_minutes||25) : (p.break_minutes||5))*60;
-    t.running = true; t.endAt = Date.now() + t.remaining*1000;
+    if(t.remaining<=0){
+      t.remaining = (t.mode==="focus" ? (p.focus_minutes||25) : (p.break_minutes||5))*60;
+    }
+    t.running = true;
+    t.endAt = Date.now() + t.remaining*1000;
   }
-  saveTimer(p); render();
+
+  saveTimer(p);
+  render();
 }
 
 function resetTimer(id){
   const p = profileById(id);
   const t = timerFor(p);
-  t.running = false; t.endAt = null;
+  t.running = false;
+  t.endAt = null;
   t.remaining = (t.mode==="focus" ? (p.focus_minutes||25) : (p.break_minutes||5))*60;
-  saveTimer(p); render();
+  saveTimer(p);
+  render();
 }
 
-async function finishNow(id){ await completeRound(id); }
+async function finishNow(id){
+  await completeRound(id);
+}
 
 async function completeRound(id){
   const p = profileById(id);
   const t = timerFor(p);
   const wasFocus = t.mode==="focus";
-  t.running = false; t.endAt = null;
+
+  t.running = false;
+  t.endAt = null;
+
   if(wasFocus){
     const minutes = p.focus_minutes||25;
-    const {error:sErr} = await db.from("pomodoro_sessions").insert({ room_id:p.room_id, profile_id:p.id, duration_minutes:minutes });
-    if(sErr){ toast("保存番茄记录失败："+sErr.message); return; }
-    const {error:pErr} = await db.from("profiles").update({ completed_sessions:(p.completed_sessions||0)+1, focused_minutes:(p.focused_minutes||0)+minutes }).eq("id",p.id);
-    if(pErr){ toast("更新统计失败："+pErr.message); return; }
-    t.mode = "break"; t.remaining = (p.break_minutes||5)*60; toast(`${p.display_name} 完成了一个专注番茄`);
+
+    const {error:sErr} = await db.from("pomodoro_sessions").insert({
+      room_id:p.room_id,
+      profile_id:p.id,
+      duration_minutes:minutes
+    });
+    if(sErr){
+      toast("保存番茄记录失败："+sErr.message);
+      return;
+    }
+
+    const {error:pErr} = await db.from("profiles").update({
+      completed_sessions:(p.completed_sessions||0)+1,
+      focused_minutes:(p.focused_minutes||0)+minutes
+    }).eq("id",p.id);
+    if(pErr){
+      toast("更新统计失败："+pErr.message);
+      return;
+    }
+
+    t.mode = "break";
+    t.remaining = (p.break_minutes||5)*60;
+    toast(`${p.display_name} 完成了一个专注番茄`);
   }else{
-    t.mode = "focus"; t.remaining = (p.focus_minutes||25)*60; toast(`${p.display_name} 休息结束`);
+    t.mode = "focus";
+    t.remaining = (p.focus_minutes||25)*60;
+    toast(`${p.display_name} 休息结束`);
   }
-  saveTimer(p); await loadAll();
+
+  saveTimer(p);
+  await loadAll();
 }
 
 async function setMinutes(id,key,value){
   const p = profileById(id);
   const max = key==="focus_minutes" ? 180 : 60;
   const n = Math.max(1, Math.min(max, parseInt(value)||1));
+
   const {error} = await db.from("profiles").update({[key]:n}).eq("id",id);
-  if(error){ toast("设置失败："+error.message); return; }
+  if(error){
+    toast("设置失败："+error.message);
+    return;
+  }
+
   const t = timerFor(p);
   if((key==="focus_minutes"&&t.mode==="focus") || (key==="break_minutes"&&t.mode==="break")){
-    t.running = false; t.endAt = null; t.remaining = n*60; saveTimer(p);
+    t.running = false;
+    t.endAt = null;
+    t.remaining = n*60;
+    saveTimer(p);
   }
+
   await loadAll();
 }
 
 async function setRewardEvery(id,value){
   const n = Math.max(1, Math.min(20, parseInt(value)||1));
   const {error} = await db.from("profiles").update({reward_every:n}).eq("id",id);
-  if(error) toast("设置失败："+error.message); else await loadAll();
+  if(error){
+    toast("设置失败："+error.message);
+  }else{
+    await loadAll();
+  }
 }
 
 async function addTask(profileId){
@@ -777,18 +904,36 @@ async function addTask(profileId){
   const text = input.value.trim();
   if(!text) return;
   input.value = "";
-  const {error} = await db.from("tasks").insert({ room_id:p.room_id, profile_id:p.id, text });
-  if(error) toast("添加任务失败："+error.message); else await loadAll();
+
+  const {error} = await db.from("tasks").insert({
+    room_id:p.room_id,
+    profile_id:p.id,
+    text
+  });
+
+  if(error){
+    toast("添加任务失败："+error.message);
+  }else{
+    await loadAll();
+  }
 }
 
 async function toggleTask(taskId,completed){
   const {error} = await db.from("tasks").update({completed}).eq("id",taskId);
-  if(error) toast("更新任务失败："+error.message); else await loadAll();
+  if(error){
+    toast("更新任务失败："+error.message);
+  }else{
+    await loadAll();
+  }
 }
 
 async function deleteTask(taskId){
   const {error} = await db.from("tasks").delete().eq("id",taskId);
-  if(error) toast("删除任务失败："+error.message); else await loadAll();
+  if(error){
+    toast("删除任务失败："+error.message);
+  }else{
+    await loadAll();
+  }
 }
 
 function updateDynamic(){
@@ -799,32 +944,62 @@ function updateDynamic(){
       const total = (t.mode==="focus" ? (p.focus_minutes||25) : (p.break_minutes||5))*60;
       const el = document.getElementById(`timer-${p.id}`);
       const bar = document.getElementById(`progress-${p.id}`);
+
       if(el) el.textContent = fmt(t.remaining);
       if(bar) bar.style.width = `${Math.min(100,Math.max(0,(1-t.remaining/total)*100))}%`;
-      if(t.remaining<=0){ saveTimer(p); completeRound(p.id); }
+
+      if(t.remaining<=0){
+        saveTimer(p);
+        completeRound(p.id);
+      }
     }
   });
 }
 
 function toast(msg){
   const e = document.getElementById("toast");
-  e.textContent = msg; e.classList.add("show");
+  e.textContent = msg;
+  e.classList.add("show");
   setTimeout(()=>e.classList.remove("show"),2600);
 }
 
 function subscribeRealtime(){
   if(realtimeChannel) return;
+
   realtimeChannel = db.channel("dog-room-"+ROOM_CODE)
-    .on("postgres_changes",{ event:"*",schema:"public",table:"profiles",filter:`room_id=eq.${roomId}` },()=>scheduleRefresh())
-    .on("postgres_changes",{ event:"*",schema:"public",table:"tasks",filter:`room_id=eq.${roomId}` },()=>scheduleRefresh())
-    .on("postgres_changes",{ event:"*",schema:"public",table:"pomodoro_sessions",filter:`room_id=eq.${roomId}` },()=>scheduleRefresh())
-    .subscribe(status=>{ if(status==="SUBSCRIBED") setStatus("online", "已授权 · 实时同步"); });
+    .on("postgres_changes",{
+      event:"*",schema:"public",table:"profiles",filter:`room_id=eq.${roomId}`
+    },()=>scheduleRefresh())
+    .on("postgres_changes",{
+      event:"*",schema:"public",table:"tasks",filter:`room_id=eq.${roomId}`
+    },()=>scheduleRefresh())
+    .on("postgres_changes",{
+      event:"*",schema:"public",table:"pomodoro_sessions",filter:`room_id=eq.${roomId}`
+    },()=>scheduleRefresh())
+    .subscribe(status=>{
+      if(status==="SUBSCRIBED"){
+        setStatus("online", "已授权 · 实时同步");
+      }
+    });
 }
 
-function scheduleRefresh(){ clearTimeout(refreshTimer); refreshTimer = setTimeout(()=>loadAll(),180); }
+function scheduleRefresh(){
+  clearTimeout(refreshTimer);
+  refreshTimer = setTimeout(()=>loadAll(),180);
+}
 
-setInterval(()=>{ updateDynamic(); profiles.forEach(saveTimer); },250);
-document.addEventListener("visibilitychange",()=>{ if(!document.hidden && roomId){ updateDynamic(); loadAll(); } });
+setInterval(()=>{
+  updateDynamic();
+  profiles.forEach(saveTimer);
+},250);
+
+document.addEventListener("visibilitychange",()=>{
+  if(!document.hidden && roomId){
+    updateDynamic();
+    loadAll();
+  }
+});
+
 boot();
 </script>
 </body>
