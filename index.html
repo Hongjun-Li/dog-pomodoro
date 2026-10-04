@@ -3,417 +3,323 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>双人学习小狗番茄钟</title>
+  <title>双人学习小狗番茄钟 · 云端版</title>
   <style>
     :root{
-      --bg:#fff8ef;
-      --panel:#ffffff;
-      --line:#eadfce;
-      --text:#2c2a27;
-      --muted:#7b746b;
-      --accent:#ff9d66;
-      --accent-2:#ffd4b8;
-      --green:#7fc8a9;
-      --yellow:#f7d778;
-      --shadow:0 12px 30px rgba(93,70,44,.10);
+      --bg:#fff8ef; --panel:#fff; --line:#eadfce; --text:#2c2a27; --muted:#7b746b;
+      --accent:#ff9d66; --green:#7fc8a9; --shadow:0 12px 30px rgba(93,70,44,.10);
     }
     *{box-sizing:border-box}
     body{
-      margin:0;
-      font-family:ui-rounded, "SF Pro Rounded", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
-      color:var(--text);
-      background:
-        radial-gradient(circle at 20% 10%, #ffe3cd 0 90px, transparent 91px),
-        radial-gradient(circle at 80% 15%, #fff0a8 0 70px, transparent 71px),
-        var(--bg);
-      min-height:100vh;
+      margin:0; min-height:100vh; color:var(--text);
+      font-family:ui-rounded,"SF Pro Rounded","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+      background:radial-gradient(circle at 20% 10%,#ffe3cd 0 90px,transparent 91px),
+                 radial-gradient(circle at 80% 15%,#fff0a8 0 70px,transparent 71px),var(--bg);
     }
     .app{max-width:1400px;margin:auto;padding:28px}
-    .topbar{
-      display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px
-    }
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}
     .brand h1{margin:0;font-size:28px}
     .brand p{margin:6px 0 0;color:var(--muted);font-size:14px}
-    .top-actions{display:flex;gap:10px;flex-wrap:wrap}
-    button, input, select, textarea{font:inherit}
-    button{
-      border:0;border-radius:12px;padding:10px 14px;cursor:pointer;
-      background:#f6eee5;color:var(--text);transition:.18s transform,.18s opacity
-    }
-    button:hover{transform:translateY(-1px)}
-    button.primary{background:var(--accent);color:white;font-weight:700}
-    button.green{background:var(--green);color:white;font-weight:700}
-    button.ghost{background:white;border:1px solid var(--line)}
-    .board{
-      display:grid;grid-template-columns:1fr 1fr;gap:20px
-    }
-    .user{
-      background:rgba(255,255,255,.86);backdrop-filter:blur(8px);
-      border:1px solid rgba(234,223,206,.9);border-radius:24px;padding:20px;
-      box-shadow:var(--shadow);min-width:0
-    }
-    .user-head{
-      display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px
-    }
+    .status{display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid var(--line);border-radius:12px;background:white;font-size:13px}
+    .dot{width:9px;height:9px;border-radius:50%;background:#c8c2ba}
+    .dot.online{background:#54b98c}.dot.error{background:#e56b6b}
+    button,input{font:inherit}
+    button{border:0;border-radius:12px;padding:10px 14px;cursor:pointer;background:#f6eee5;color:var(--text)}
+    button.primary{background:var(--accent);color:#fff;font-weight:700}
+    button.green{background:var(--green);color:#fff;font-weight:700}
+    button:disabled{opacity:.45;cursor:not-allowed}
+    .board{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    .user{background:rgba(255,255,255,.88);border:1px solid var(--line);border-radius:24px;padding:20px;box-shadow:var(--shadow);min-width:0}
+    .user-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
     .identity{display:flex;align-items:center;gap:12px;min-width:0}
-    .avatar{
-      width:52px;height:52px;border-radius:18px;display:grid;place-items:center;
-      background:#fff1e7;border:1px solid var(--line);font-size:30px
-    }
-    .name-wrap input{
-      width:100%;border:0;border-bottom:1px dashed transparent;background:transparent;
-      font-size:20px;font-weight:800;color:var(--text);outline:none
-    }
+    .avatar{width:52px;height:52px;border-radius:18px;display:grid;place-items:center;background:#fff1e7;border:1px solid var(--line);font-size:30px}
+    .name-wrap input{width:100%;border:0;border-bottom:1px dashed transparent;background:transparent;font-size:20px;font-weight:800;outline:none}
     .name-wrap input:focus{border-bottom-color:var(--accent)}
     .sub{font-size:12px;color:var(--muted);margin-top:4px}
     .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:14px}
-    .card{
-      background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px
-    }
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px}
     .card h3{margin:0 0 12px;font-size:16px}
-    .timer-box{text-align:center}
-    .timer{
-      font-size:52px;line-height:1;font-weight:900;letter-spacing:1px;margin:18px 0 12px
-    }
-    .mode-row{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
-    .mode-row button.active{background:#2f2d2a;color:white}
-    .timer-actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:14px}
-    .preset-row{
-      display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;color:var(--muted);font-size:13px
-    }
+    .timer-box{text-align:center}.timer{font-size:52px;line-height:1;font-weight:900;margin:18px 0 12px}
+    .mode-row,.timer-actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+    .mode-row button.active{background:#2f2d2a;color:#fff}
+    .timer-actions{margin-top:14px}
+    .preset-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;color:var(--muted);font-size:13px;flex-wrap:wrap}
     .preset-row input{width:64px;padding:7px 8px;border:1px solid var(--line);border-radius:10px;text-align:center}
-    .progress{
-      height:10px;background:#f2ede7;border-radius:999px;overflow:hidden;margin-top:14px
-    }
-    .progress > div{height:100%;background:linear-gradient(90deg,var(--accent),#ffc58f);width:0%}
+    .progress{height:10px;background:#f2ede7;border-radius:999px;overflow:hidden;margin-top:14px}
+    .progress>div{height:100%;background:linear-gradient(90deg,var(--accent),#ffc58f);width:0%}
     .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
     .stat{background:#fffaf5;border:1px solid var(--line);padding:10px;border-radius:14px;text-align:center}
-    .stat b{display:block;font-size:20px}
-    .stat span{font-size:11px;color:var(--muted)}
+    .stat b{display:block;font-size:20px}.stat span{font-size:11px;color:var(--muted)}
     .task-form{display:grid;grid-template-columns:1fr auto;gap:8px}
     .task-form input{padding:10px 12px;border:1px solid var(--line);border-radius:12px;outline:none}
     .task-list{display:flex;flex-direction:column;gap:8px;margin-top:12px;max-height:205px;overflow:auto}
-    .task{
-      display:flex;align-items:center;gap:9px;padding:9px 10px;border:1px solid var(--line);border-radius:12px
-    }
+    .task{display:flex;align-items:center;gap:9px;padding:9px 10px;border:1px solid var(--line);border-radius:12px}
     .task.done .task-text{text-decoration:line-through;color:#9b958e}
-    .task-text{flex:1;min-width:0;overflow-wrap:anywhere}
-    .task small{color:var(--muted)}
+    .task-text{flex:1;min-width:0;overflow-wrap:anywhere}.task small{color:var(--muted)}
     .task button{padding:5px 8px;border-radius:8px;font-size:12px}
-    .reward-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
-    .reward-head small{color:var(--muted)}
+    .reward-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.reward-head small{color:var(--muted)}
     .dog-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:12px}
-    .dog{
-      aspect-ratio:1;border-radius:16px;border:1px solid var(--line);background:#fffaf5;
-      display:grid;place-items:center;position:relative;overflow:hidden
-    }
-    .dog.locked{filter:grayscale(1);opacity:.28}
-    .dog .emoji{font-size:30px}
-    .dog .badge{
-      position:absolute;right:4px;bottom:4px;font-size:9px;background:#2f2d2a;color:white;
-      border-radius:8px;padding:2px 5px
-    }
-    .milestone{
-      margin-top:10px;padding:10px 12px;border-radius:12px;background:#fff7d8;border:1px solid #f1dfa4;
-      font-size:13px
-    }
+    .dog{aspect-ratio:1;border-radius:16px;border:1px solid var(--line);background:#fffaf5;display:grid;place-items:center;position:relative;overflow:hidden}
+    .dog.locked{filter:grayscale(1);opacity:.28}.dog .emoji{font-size:30px}
+    .dog .badge{position:absolute;right:4px;bottom:4px;font-size:9px;background:#2f2d2a;color:#fff;border-radius:8px;padding:2px 5px}
+    .milestone{margin-top:10px;padding:10px 12px;border-radius:12px;background:#fff7d8;border:1px solid #f1dfa4;font-size:13px}
     .footer-note{text-align:center;color:var(--muted);font-size:12px;margin-top:18px}
-    .toast{
-      position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);
-      background:#2f2d2a;color:white;padding:11px 16px;border-radius:12px;opacity:0;pointer-events:none;
-      transition:.25s;z-index:50
-    }
+    .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#2f2d2a;color:#fff;padding:11px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;z-index:50}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-    @media (max-width:1050px){.grid{grid-template-columns:1fr}.dog-grid{grid-template-columns:repeat(7,1fr)}}
-    @media (max-width:780px){.board{grid-template-columns:1fr}.app{padding:16px}.dog-grid{grid-template-columns:repeat(5,1fr)}}
+    .loading{padding:60px 20px;text-align:center;color:var(--muted);grid-column:1/-1}
+    @media(max-width:1050px){.grid{grid-template-columns:1fr}.dog-grid{grid-template-columns:repeat(7,1fr)}}
+    @media(max-width:780px){.board{grid-template-columns:1fr}.app{padding:16px}.dog-grid{grid-template-columns:repeat(5,1fr)}}
   </style>
 </head>
 <body>
-  <div class="app">
-    <div class="topbar">
-      <div class="brand">
-        <h1>🐾 双人学习小狗番茄钟</h1>
-        <p>两个人在同一台电脑上各自计时、记任务、攒专注时长并收集小狗。</p>
-      </div>
-      <div class="top-actions">
-        <button class="ghost" onclick="exportData()">导出进度</button>
-        <button class="ghost" onclick="document.getElementById('importFile').click()">导入进度</button>
-        <input id="importFile" type="file" accept=".json" hidden onchange="importData(event)">
-        <button onclick="resetAll()">重置全部</button>
-      </div>
+<div class="app">
+  <div class="topbar">
+    <div class="brand">
+      <h1>🐾 双人学习小狗番茄钟</h1>
+      <p>房间 DOG2026 · 任务、学习统计和小狗进度保存在 Supabase 云端。</p>
     </div>
-
-    <div id="board" class="board"></div>
-    <div class="footer-note">数据只保存在当前浏览器的 localStorage 中。关闭网页后再次打开，进度仍会保留。</div>
+    <div class="status"><span id="statusDot" class="dot"></span><span id="statusText">正在连接云端…</span></div>
   </div>
-  <div id="toast" class="toast"></div>
+  <div id="board" class="board"><div class="loading">正在读取共享学习房间…</div></div>
+  <div class="footer-note">计时器在当前设备本地运行；任务、完成记录、统计和设置会同步到云端。</div>
+</div>
+<div id="toast" class="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+const SUPABASE_URL = "https://afbrhqepoecpreozoqvx.supabase.co";
+const SUPABASE_KEY = "sb_publishable_Gx3fNAg2V0Sgq9OQ59Y8yQ_fRCHOVcB";
+const ROOM_CODE = "DOG2026";
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 const DOGS = [
   ["🐶","奶油"],["🐕","柴柴"],["🐩","卷卷"],["🦮","金金"],["🐕‍🦺","勇勇"],
   ["🐶","豆豆"],["🐕","可可"],["🐩","棉花"],["🦮","布丁"],["🐕‍🦺","星星"],
   ["🐶","团子"],["🐕","麦麦"],["🐩","雪球"],["🦮","柚子"],["🐕‍🦺","露露"]
 ];
-const STORAGE_KEY = "duo-dog-pomodoro-v1";
+let room = null;
+let profiles = [];
+let tasks = [];
+let timers = {};
+let realtimeChannel = null;
+let refreshTimer = null;
 
-function defaultUser(name, avatar){
-  return {
-    name, avatar, focusMin:25, breakMin:5, mode:"focus",
-    remaining:25*60, running:false, endAt:null,
-    completedSessions:0, focusedMinutes:0, tasks:[],
-    selectedDog:0, rewardEvery:3
-  };
+function h(s=""){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]))}
+function fmt(sec){sec=Math.max(0,Math.ceil(sec));return String(Math.floor(sec/60)).padStart(2,"0")+":"+String(sec%60).padStart(2,"0")}
+function earnedDogs(p){return Math.min(DOGS.length,Math.floor((p.completed_sessions||0)/Math.max(1,p.reward_every||3)))}
+function nextRewardText(p){
+  const every=Math.max(1,p.reward_every||3), earned=earnedDogs(p);
+  if(earned>=DOGS.length)return "你已经收集完全部小狗！";
+  const next=(Math.floor((p.completed_sessions||0)/every)+1)*every;
+  return `再完成 ${next-(p.completed_sessions||0)} 个专注番茄，即可解锁下一只小狗。`;
 }
-let state = loadState() || {
-  users:[defaultUser("用户 A","🐶"), defaultUser("用户 B","🐕")],
-  version:1
-};
-let tickHandle = null;
-
-function loadState(){
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e){ return null; }
+function timerFor(p){
+  if(!timers[p.id]){
+    const key="dog-timer-"+p.id;
+    let saved=null; try{saved=JSON.parse(localStorage.getItem(key))}catch(e){}
+    timers[p.id]=saved||{mode:"focus",remaining:(p.focus_minutes||25)*60,running:false,endAt:null};
+  }
+  return timers[p.id];
 }
-function saveState(){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+function saveTimer(p){
+  localStorage.setItem("dog-timer-"+p.id,JSON.stringify(timerFor(p)));
 }
-function h(s=""){
-  return String(s).replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));
+function setStatus(type,text){
+  const d=document.getElementById("statusDot"), t=document.getElementById("statusText");
+  d.className="dot "+type;t.textContent=text;
 }
-function fmt(sec){
-  sec = Math.max(0, Math.ceil(sec));
-  const m = Math.floor(sec/60), s = sec%60;
-  return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+async function loadAll(silent=false){
+  try{
+    const r=await db.from("rooms").select("*").eq("room_code",ROOM_CODE).single();
+    if(r.error) throw r.error;
+    room=r.data;
+    const p=await db.from("profiles").select("*").eq("room_id",room.id).order("slot");
+    if(p.error) throw p.error;
+    profiles=p.data||[];
+    const ts=await db.from("tasks").select("*").eq("room_id",room.id).order("created_at",{ascending:false});
+    if(ts.error) throw ts.error;
+    tasks=ts.data||[];
+    setStatus("online","云端已连接");
+    render();
+  }catch(e){
+    console.error(e);
+    setStatus("error","连接失败");
+    if(!silent) document.getElementById("board").innerHTML=`<div class="loading">无法读取 Supabase：${h(e.message||e)}</div>`;
+  }
 }
-function earnedDogs(u){
-  return Math.min(DOGS.length, Math.floor(u.completedSessions / Math.max(1,u.rewardEvery)));
-}
-function nextRewardText(u){
-  const every = Math.max(1,u.rewardEvery);
-  const next = (Math.floor(u.completedSessions/every)+1)*every;
-  const left = next - u.completedSessions;
-  if(earnedDogs(u) >= DOGS.length) return "你已经收集完全部小狗！";
-  return `再完成 ${left} 个专注番茄，即可解锁下一只小狗。`;
-}
-function render(){
-  const board = document.getElementById("board");
-  board.innerHTML = state.users.map((u,i)=>userHTML(u,i)).join("");
-  updateDynamic();
-}
-function userHTML(u,i){
-  const total = u.mode==="focus" ? u.focusMin*60 : u.breakMin*60;
-  const pct = total ? (1-u.remaining/total)*100 : 0;
-  return `
-  <section class="user" data-user="${i}">
+function userHTML(p,i){
+  const t=timerFor(p), total=(t.mode==="focus"?(p.focus_minutes||25):(p.break_minutes||5))*60;
+  const pct=total?(1-t.remaining/total)*100:0;
+  const myTasks=tasks.filter(x=>x.profile_id===p.id);
+  return `<section class="user">
     <div class="user-head">
       <div class="identity">
-        <div class="avatar">${u.avatar}</div>
+        <div class="avatar">${h(p.avatar||"🐶")}</div>
         <div class="name-wrap">
-          <input value="${h(u.name)}" oninput="renameUser(${i},this.value)" aria-label="用户名">
-          <div class="sub">${i===0?"左侧用户":"右侧用户"} · 本地独立记录</div>
+          <input value="${h(p.display_name)}" onchange="renameUser('${p.id}',this.value)" aria-label="用户名">
+          <div class="sub">${p.slot==="A"?"左侧用户":"右侧用户"} · Supabase 云端记录</div>
         </div>
       </div>
-      <button onclick="cycleAvatar(${i})">换头像</button>
+      <button onclick="cycleAvatar('${p.id}')">换头像</button>
     </div>
-
     <div class="grid">
       <div class="card timer-box">
         <h3>番茄钟</h3>
         <div class="mode-row">
-          <button class="${u.mode==="focus"?"active":""}" onclick="setMode(${i},'focus')">专注</button>
-          <button class="${u.mode==="break"?"active":""}" onclick="setMode(${i},'break')">休息</button>
+          <button class="${t.mode==="focus"?"active":""}" onclick="setMode('${p.id}','focus')">专注</button>
+          <button class="${t.mode==="break"?"active":""}" onclick="setMode('${p.id}','break')">休息</button>
         </div>
-        <div class="timer" id="timer-${i}">${fmt(u.remaining)}</div>
-        <div class="progress"><div id="progress-${i}" style="width:${pct}%"></div></div>
+        <div class="timer" id="timer-${p.id}">${fmt(t.remaining)}</div>
+        <div class="progress"><div id="progress-${p.id}" style="width:${pct}%"></div></div>
         <div class="timer-actions">
-          <button class="primary" onclick="toggleTimer(${i})">${u.running?"暂停":"开始"}</button>
-          <button onclick="resetTimer(${i})">重置</button>
-          <button class="green" onclick="finishNow(${i})">完成本轮</button>
+          <button class="primary" onclick="toggleTimer('${p.id}')">${t.running?"暂停":"开始"}</button>
+          <button onclick="resetTimer('${p.id}')">重置</button>
+          <button class="green" onclick="finishNow('${p.id}')">完成本轮</button>
         </div>
         <div class="preset-row">
-          专注 <input type="number" min="1" max="180" value="${u.focusMin}" onchange="setMinutes(${i},'focusMin',this.value)"> 分钟
-          · 休息 <input type="number" min="1" max="60" value="${u.breakMin}" onchange="setMinutes(${i},'breakMin',this.value)"> 分钟
+          专注 <input type="number" min="1" max="180" value="${p.focus_minutes||25}" onchange="setMinutes('${p.id}','focus_minutes',this.value)"> 分钟
+          · 休息 <input type="number" min="1" max="60" value="${p.break_minutes||5}" onchange="setMinutes('${p.id}','break_minutes',this.value)"> 分钟
         </div>
       </div>
-
       <div class="card">
         <h3>学习统计</h3>
         <div class="stats">
-          <div class="stat"><b>${u.completedSessions}</b><span>完成番茄</span></div>
-          <div class="stat"><b>${u.focusedMinutes}</b><span>专注分钟</span></div>
-          <div class="stat"><b>${earnedDogs(u)}</b><span>已收集小狗</span></div>
+          <div class="stat"><b>${p.completed_sessions||0}</b><span>完成番茄</span></div>
+          <div class="stat"><b>${p.focused_minutes||0}</b><span>专注分钟</span></div>
+          <div class="stat"><b>${earnedDogs(p)}</b><span>已收集小狗</span></div>
         </div>
-        <div class="milestone">${nextRewardText(u)}</div>
-        <div class="preset-row" style="justify-content:flex-start;margin-top:10px">
-          每完成
-          <input type="number" min="1" max="20" value="${u.rewardEvery}" onchange="setRewardEvery(${i},this.value)">
-          个专注番茄，解锁 1 只小狗
+        <div class="milestone">${nextRewardText(p)}</div>
+        <div class="preset-row" style="justify-content:flex-start">
+          每完成 <input type="number" min="1" max="20" value="${p.reward_every||3}" onchange="setRewardEvery('${p.id}',this.value)"> 个专注番茄，解锁 1 只小狗
         </div>
       </div>
-
       <div class="card">
         <h3>学习任务</h3>
         <div class="task-form">
-          <input id="task-input-${i}" placeholder="例如：背单词 30 个" onkeydown="if(event.key==='Enter')addTask(${i})">
-          <button class="primary" onclick="addTask(${i})">添加</button>
+          <input id="task-input-${p.id}" placeholder="例如：背单词 30 个" onkeydown="if(event.key==='Enter')addTask('${p.id}')">
+          <button class="primary" onclick="addTask('${p.id}')">添加</button>
         </div>
         <div class="task-list">
-          ${u.tasks.length ? u.tasks.map((t,ti)=>`
-            <div class="task ${t.done?"done":""}">
-              <input type="checkbox" ${t.done?"checked":""} onchange="toggleTask(${i},${ti})">
-              <div class="task-text">${h(t.text)}</div>
-              <small>${t.done?"完成":"进行中"}</small>
-              <button onclick="deleteTask(${i},${ti})">删除</button>
-            </div>`).join("") : `<div class="sub">还没有任务。添加一个今天要完成的学习任务。</div>`}
+          ${myTasks.length?myTasks.map(x=>`<div class="task ${x.completed?"done":""}">
+            <input type="checkbox" ${x.completed?"checked":""} onchange="toggleTask('${x.id}',${!x.completed})">
+            <div class="task-text">${h(x.text)}</div>
+            <small>${x.completed?"完成":"进行中"}</small>
+            <button onclick="deleteTask('${x.id}')">删除</button>
+          </div>`).join(""):`<div class="sub">还没有任务。添加一个学习任务。</div>`}
         </div>
       </div>
-
       <div class="card">
-        <div class="reward-head">
-          <h3 style="margin:0">小狗收藏册</h3>
-          <small>${earnedDogs(u)}/${DOGS.length}</small>
-        </div>
-        <div class="dog-grid">
-          ${DOGS.map((d,di)=>{
-            const unlocked = di < earnedDogs(u);
-            return `<div class="dog ${unlocked?"":"locked"}" title="${unlocked?d[1]:"未解锁"}">
-              <div class="emoji">${d[0]}</div>
-              <div class="badge">${unlocked?d[1]:"🔒"}</div>
-            </div>`;
-          }).join("")}
-        </div>
+        <div class="reward-head"><h3 style="margin:0">小狗收藏册</h3><small>${earnedDogs(p)}/${DOGS.length}</small></div>
+        <div class="dog-grid">${DOGS.map((d,di)=>{const u=di<earnedDogs(p);return `<div class="dog ${u?"":"locked"}" title="${u?d[1]:"未解锁"}"><div class="emoji">${d[0]}</div><div class="badge">${u?d[1]:"🔒"}</div></div>`}).join("")}</div>
       </div>
     </div>
   </section>`;
 }
-
-function renameUser(i,v){ state.users[i].name=v; saveState(); }
-function cycleAvatar(i){
-  const icons=["🐶","🐕","🐩","🦮","🐕‍🦺","🐾"];
-  const idx = icons.indexOf(state.users[i].avatar);
-  state.users[i].avatar = icons[(idx+1)%icons.length];
-  saveState(); render();
+function render(){
+  document.getElementById("board").innerHTML=profiles.length?profiles.map(userHTML).join(""):`<div class="loading">房间里没有找到用户。</div>`;
+  updateDynamic();
 }
-function setMode(i,mode){
-  const u=state.users[i];
-  u.running=false; u.endAt=null; u.mode=mode;
-  u.remaining=(mode==="focus"?u.focusMin:u.breakMin)*60;
-  saveState(); render();
+function profileById(id){return profiles.find(x=>x.id===id)}
+async function renameUser(id,value){
+  const v=value.trim(); if(!v)return;
+  const {error}=await db.from("profiles").update({display_name:v}).eq("id",id);
+  if(error) toast("修改名字失败："+error.message);
 }
-function setMinutes(i,key,v){
-  const u=state.users[i], n=Math.max(1,Math.min(key==="focusMin"?180:60,parseInt(v)||1));
-  u[key]=n;
-  if((key==="focusMin"&&u.mode==="focus") || (key==="breakMin"&&u.mode==="break")){
-    u.running=false; u.endAt=null; u.remaining=n*60;
-  }
-  saveState(); render();
+async function cycleAvatar(id){
+  const p=profileById(id), icons=["🐶","🐕","🐩","🦮","🐕‍🦺","🐾"];
+  const next=icons[(icons.indexOf(p.avatar)+1+icons.length)%icons.length];
+  const {error}=await db.from("profiles").update({avatar:next}).eq("id",id);
+  if(error) toast("修改头像失败："+error.message); else await loadAll(true);
 }
-function setRewardEvery(i,v){
-  state.users[i].rewardEvery=Math.max(1,Math.min(20,parseInt(v)||1));
-  saveState(); render();
+function setMode(id,mode){
+  const p=profileById(id),t=timerFor(p);t.running=false;t.endAt=null;t.mode=mode;
+  t.remaining=(mode==="focus"?(p.focus_minutes||25):(p.break_minutes||5))*60;saveTimer(p);render();
 }
-function toggleTimer(i){
-  const u=state.users[i];
-  if(u.running){
-    u.remaining=Math.max(0,Math.ceil((u.endAt-Date.now())/1000));
-    u.running=false;u.endAt=null;
-  }else{
-    if(u.remaining<=0) u.remaining=(u.mode==="focus"?u.focusMin:u.breakMin)*60;
-    u.running=true;u.endAt=Date.now()+u.remaining*1000;
-  }
-  saveState(); render();
+function toggleTimer(id){
+  const p=profileById(id),t=timerFor(p);
+  if(t.running){t.remaining=Math.max(0,Math.ceil((t.endAt-Date.now())/1000));t.running=false;t.endAt=null}
+  else{if(t.remaining<=0)t.remaining=(t.mode==="focus"?(p.focus_minutes||25):(p.break_minutes||5))*60;t.running=true;t.endAt=Date.now()+t.remaining*1000}
+  saveTimer(p);render();
 }
-function resetTimer(i){
-  const u=state.users[i];
-  u.running=false;u.endAt=null;
-  u.remaining=(u.mode==="focus"?u.focusMin:u.breakMin)*60;
-  saveState(); render();
+function resetTimer(id){
+  const p=profileById(id),t=timerFor(p);t.running=false;t.endAt=null;t.remaining=(t.mode==="focus"?(p.focus_minutes||25):(p.break_minutes||5))*60;saveTimer(p);render();
 }
-function finishNow(i){ completeRound(i,true); }
-function completeRound(i,manual=false){
-  const u=state.users[i];
-  const wasFocus=u.mode==="focus";
-  u.running=false;u.endAt=null;
+async function finishNow(id){await completeRound(id)}
+async function completeRound(id){
+  const p=profileById(id),t=timerFor(p),wasFocus=t.mode==="focus";
+  t.running=false;t.endAt=null;
   if(wasFocus){
-    const before=earnedDogs(u);
-    u.completedSessions+=1;
-    u.focusedMinutes+=u.focusMin;
-    const after=earnedDogs(u);
-    if(after>before && after<=DOGS.length){
-      toast(`${u.name} 解锁了新小狗：${DOGS[after-1][1]} ${DOGS[after-1][0]}`);
-    }else{
-      toast(`${u.name} 完成了一个专注番茄。`);
-    }
-    u.mode="break";u.remaining=u.breakMin*60;
+    const minutes=p.focus_minutes||25;
+    const {error:sErr}=await db.from("pomodoro_sessions").insert({room_id:p.room_id,profile_id:p.id,duration_minutes:minutes});
+    if(sErr){toast("保存番茄记录失败："+sErr.message);return}
+    const {error:pErr}=await db.from("profiles").update({
+      completed_sessions:(p.completed_sessions||0)+1,
+      focused_minutes:(p.focused_minutes||0)+minutes
+    }).eq("id",p.id);
+    if(pErr){toast("更新统计失败："+pErr.message);return}
+    t.mode="break";t.remaining=(p.break_minutes||5)*60;toast(`${p.display_name} 完成了一个专注番茄`);
   }else{
-    toast(`${u.name} 休息结束，准备下一轮专注。`);
-    u.mode="focus";u.remaining=u.focusMin*60;
+    t.mode="focus";t.remaining=(p.focus_minutes||25)*60;toast(`${p.display_name} 休息结束`);
   }
-  saveState(); render();
+  saveTimer(p);await loadAll(true);
 }
-function addTask(i){
-  const input=document.getElementById(`task-input-${i}`);
-  const text=input.value.trim();
-  if(!text) return;
-  state.users[i].tasks.unshift({text,done:false,createdAt:Date.now()});
-  saveState(); render();
+async function setMinutes(id,key,value){
+  const p=profileById(id),max=key==="focus_minutes"?180:60,n=Math.max(1,Math.min(max,parseInt(value)||1));
+  const {error}=await db.from("profiles").update({[key]:n}).eq("id",id);
+  if(error){toast("设置失败："+error.message);return}
+  const t=timerFor(p);
+  if((key==="focus_minutes"&&t.mode==="focus")||(key==="break_minutes"&&t.mode==="break")){t.running=false;t.endAt=null;t.remaining=n*60;saveTimer(p)}
+  await loadAll(true);
 }
-function toggleTask(i,ti){
-  state.users[i].tasks[ti].done=!state.users[i].tasks[ti].done;
-  saveState(); render();
+async function setRewardEvery(id,value){
+  const n=Math.max(1,Math.min(20,parseInt(value)||1));
+  const {error}=await db.from("profiles").update({reward_every:n}).eq("id",id);
+  if(error)toast("设置失败："+error.message);else await loadAll(true);
 }
-function deleteTask(i,ti){
-  state.users[i].tasks.splice(ti,1);saveState();render();
+async function addTask(profileId){
+  const p=profileById(profileId),input=document.getElementById(`task-input-${profileId}`),text=input.value.trim();
+  if(!text)return;
+  input.value="";
+  const {error}=await db.from("tasks").insert({room_id:p.room_id,profile_id:p.id,text});
+  if(error)toast("添加任务失败："+error.message);else await loadAll(true);
+}
+async function toggleTask(taskId,completed){
+  const {error}=await db.from("tasks").update({completed}).eq("id",taskId);
+  if(error)toast("更新任务失败："+error.message);else await loadAll(true);
+}
+async function deleteTask(taskId){
+  const {error}=await db.from("tasks").delete().eq("id",taskId);
+  if(error)toast("删除任务失败："+error.message);else await loadAll(true);
 }
 function updateDynamic(){
-  state.users.forEach((u,i)=>{
-    if(u.running && u.endAt){
-      u.remaining=Math.max(0,Math.ceil((u.endAt-Date.now())/1000));
-      const total=(u.mode==="focus"?u.focusMin:u.breakMin)*60;
-      const timer=document.getElementById(`timer-${i}`);
-      const progress=document.getElementById(`progress-${i}`);
-      if(timer) timer.textContent=fmt(u.remaining);
-      if(progress) progress.style.width=`${Math.min(100,Math.max(0,(1-u.remaining/total)*100))}%`;
-      if(u.remaining<=0) completeRound(i);
+  profiles.forEach(p=>{
+    const t=timerFor(p);
+    if(t.running&&t.endAt){
+      t.remaining=Math.max(0,Math.ceil((t.endAt-Date.now())/1000));
+      const total=(t.mode==="focus"?(p.focus_minutes||25):(p.break_minutes||5))*60;
+      const el=document.getElementById(`timer-${p.id}`),bar=document.getElementById(`progress-${p.id}`);
+      if(el)el.textContent=fmt(t.remaining);
+      if(bar)bar.style.width=`${Math.min(100,Math.max(0,(1-t.remaining/total)*100))}%`;
+      if(t.remaining<=0){saveTimer(p);completeRound(p.id)}
     }
   });
 }
-function startTicker(){
-  if(tickHandle) clearInterval(tickHandle);
-  tickHandle=setInterval(()=>{ updateDynamic(); saveState(); },250);
+function toast(msg){const e=document.getElementById("toast");e.textContent=msg;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),2600)}
+function subscribeRealtime(){
+  realtimeChannel=db.channel("dog-room-"+ROOM_CODE)
+    .on("postgres_changes",{event:"*",schema:"public",table:"profiles"},()=>scheduleRefresh())
+    .on("postgres_changes",{event:"*",schema:"public",table:"tasks"},()=>scheduleRefresh())
+    .on("postgres_changes",{event:"*",schema:"public",table:"pomodoro_sessions"},()=>scheduleRefresh())
+    .subscribe(status=>{
+      if(status==="SUBSCRIBED")setStatus("online","云端已连接 · 实时同步");
+    });
 }
-function toast(msg){
-  const el=document.getElementById("toast");
-  el.textContent=msg;el.classList.add("show");
-  setTimeout(()=>el.classList.remove("show"),2400);
+function scheduleRefresh(){
+  clearTimeout(refreshTimer);refreshTimer=setTimeout(()=>loadAll(true),180);
 }
-function exportData(){
-  const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="双人学习小狗番茄钟-进度.json";
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-function importData(e){
-  const f=e.target.files[0]; if(!f)return;
-  const reader=new FileReader();
-  reader.onload=()=>{
-    try{
-      const data=JSON.parse(reader.result);
-      if(!data.users || data.users.length!==2) throw new Error("格式不正确");
-      state=data;saveState();render();toast("进度已导入");
-    }catch(err){alert("导入失败：文件格式不正确");}
-    e.target.value="";
-  };
-  reader.readAsText(f);
-}
-function resetAll(){
-  if(!confirm("确定要清空两位用户的所有任务、计时和小狗收集进度吗？")) return;
-  state={users:[defaultUser("用户 A","🐶"),defaultUser("用户 B","🐕")],version:1};
-  saveState();render();toast("已重置全部进度");
-}
-document.addEventListener("visibilitychange",()=>{ if(!document.hidden) updateDynamic(); });
-render(); startTicker();
+setInterval(()=>{updateDynamic();profiles.forEach(saveTimer)},250);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden){updateDynamic();loadAll(true)}});
+(async()=>{await loadAll();subscribeRealtime()})();
 </script>
 </body>
 </html>
