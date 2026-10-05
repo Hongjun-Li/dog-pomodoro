@@ -248,13 +248,11 @@
     .name-dog{
       min-height:92px;border-radius:18px;padding:12px 10px;background:rgba(255,255,255,.92);
       border:1px solid #dcefd4;text-align:center;box-shadow:0 8px 16px rgba(95,127,77,.08);
-      animation:bob var(--dur,2.8s) ease-in-out infinite;animation-delay:var(--delay,0s);
+      
       display:flex;flex-direction:column;align-items:center;justify-content:center
     }
     .name-dog.today{background:#fff5d8;border-color:#f0d27a}
     .name-dog .dog-name{font-size:14px;font-weight:850;line-height:1.3}
-    .name-dog .activity{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.35}
-    .name-dog .badge{display:inline-block;margin-top:7px;padding:2px 6px;border-radius:999px;background:#2f2d2a;color:#fff;font-size:10px}
     .rescue-name{
       min-height:88px;border-radius:16px;border:1px solid var(--line);background:#fffaf5;
       display:flex;align-items:center;justify-content:center;text-align:center;padding:12px;
@@ -324,7 +322,7 @@
   </div>
 
   <div id="footer" class="footer-note" style="display:none">
-    任务与番茄记录保存在 Supabase，并自动同步到对应月份的 Notion；计时器秒数只保存在当前设备。
+    当前工作日期决定任务、番茄和当天统计；历史不会删除。任务与番茄记录保存在 Supabase，并同步到对应月份的 Notion。
   </div>
 </div>
 
@@ -374,9 +372,10 @@ let room = null;
 let roomId = null;
 let profiles = [];
 let tasks = [];
-let todaySessions = [];
+let sessions = [];
 let timers = {};
 let petTabs = {};
+let workDates = {};
 let realtimeChannel = null;
 let refreshTimer = null;
 
@@ -490,15 +489,12 @@ async function loadAll(){
     const tasksRes = await db.from("tasks").select("*").eq("room_id",roomId).order("created_at",{ascending:false});
     if(tasksRes.error) throw tasksRes.error;
     tasks = tasksRes.data || [];
-    const start = new Date();
-    start.setHours(0,0,0,0);
     const sessionsRes = await db.from("pomodoro_sessions")
       .select("*")
       .eq("room_id",roomId)
-      .gte("completed_at", start.toISOString())
       .order("completed_at",{ascending:false});
     if(sessionsRes.error) throw sessionsRes.error;
-    todaySessions = sessionsRes.data || [];
+    sessions = sessionsRes.data || [];
     showApp();
     setStatus("online", "已授权 · 云端已连接");
     render();
@@ -534,23 +530,17 @@ function nextRewardText(p){
   return `再完成 ${next-(p.completed_sessions||0)} 个专注番茄，即可救助下一只小狗。`;
 }
 
-function todaySessionCount(profileId){ return todaySessions.filter(x=>x.profile_id===profileId).length; }
-
-function todayUnlockedCount(p){
-  const every = Math.max(1,p.reward_every||3);
-  const totalNow = p.completed_sessions||0;
-  const todayCount = todaySessionCount(p.id);
-  const beforeToday = Math.max(0, totalNow - todayCount);
-  return Math.max(0, Math.floor(totalNow/every) - Math.floor(beforeToday/every));
+function selectedDateSessionCount(p){
+  return dailySessions(p).length;
 }
 
-function unlockedDogs(p){ return DOG_BREEDS.slice(0,totalUnlockedDogs(p)); }
+function selectedDateUnlockedCount(p){
+  // 狗狗是累计奖励，不按日期回退；这里仅用于显示当前日期完成了多少个番茄。
+  return 0;
+}
 
-function todayUnlockedDogs(p){
-  const count = todayUnlockedCount(p);
-  const total = totalUnlockedDogs(p);
-  if(count<=0) return [];
-  return DOG_BREEDS.slice(Math.max(0,total-count), total);
+function unlockedDogs(p){
+  return randomizedDogOrder(p).slice(0,totalUnlockedDogs(p));
 }
 
 function dogTabFor(id){ if(!petTabs[id]) petTabs[id] = "park"; return petTabs[id]; }
@@ -572,6 +562,79 @@ function dateInTimeZone(timeZone = deviceTimeZone()){
   return `${get("year")}-${get("month")}-${get("day")}`;
 }
 
+function workDateFor(profileId){
+  if(!workDates[profileId]) workDates[profileId] = dateInTimeZone();
+  return workDates[profileId];
+}
+
+function setWorkDate(profileId, value){
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(value)) return;
+  workDates[profileId] = value;
+  render();
+}
+
+function sessionDateOf(row){
+  if(row.session_date) return row.session_date;
+  if(row.completed_at){
+    const d = new Date(row.completed_at);
+    return `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,"0")}-${String(d.getUTCDate()).padStart(2,"0")}`;
+  }
+  return "";
+}
+
+function taskDateOf(row){
+  if(row.task_date) return row.task_date;
+  if(row.created_at){
+    const d = new Date(row.created_at);
+    return `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,"0")}-${String(d.getUTCDate()).padStart(2,"0")}`;
+  }
+  return "";
+}
+
+function dailySessions(p){
+  const day = workDateFor(p.id);
+  return sessions.filter(x=>x.profile_id===p.id && sessionDateOf(x)===day);
+}
+
+function dailyFocusMinutes(p){
+  return dailySessions(p).reduce((sum,x)=>sum + Number(x.duration_minutes||0),0);
+}
+
+function dailyCompletedTasks(p){
+  const day = workDateFor(p.id);
+  return tasks.filter(x=>x.profile_id===p.id && taskDateOf(x)===day && x.completed).length;
+}
+
+function hashString(str){
+  let h = 2166136261;
+  for(let i=0;i<str.length;i++){
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+function seededRandom(seed){
+  let x = seed >>> 0;
+  return function(){
+    x += 0x6D2B79F5;
+    let t = x;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function randomizedDogOrder(p){
+  const arr = [...DOG_BREEDS];
+  const rand = seededRandom(hashString(`${roomId||ROOM_CODE}:${p.id}:dogs-v1`));
+  for(let i=arr.length-1;i>0;i--){
+    const j = Math.floor(rand()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
 async function syncNotion(body){
   try{
     const {data,error} = await db.functions.invoke("sync-notion", { body });
@@ -585,15 +648,10 @@ async function syncNotion(body){
   }
 }
 
-function parkDogCard(dog,index,isToday){
-  const activity = PARK_ACTIVITIES[index % PARK_ACTIVITIES.length];
-  const delay = ((index%5)*0.24).toFixed(2);
-  const dur = (2.4 + (index%4)*0.35).toFixed(2);
+function parkDogCard(dog,index){
   return `
-    <div class="name-dog ${isToday?"today":""}" style="--delay:${delay}s;--dur:${dur}s">
+    <div class="name-dog">
       <div class="dog-name">${h(dog.name)}</div>
-      <div class="activity">${activity}</div>
-      ${isToday?'<div class="badge">今日新到</div>':''}
     </div>
   `;
 }
@@ -601,24 +659,26 @@ function parkDogCard(dog,index,isToday){
 function renderDogZone(p){
   const tab = dogTabFor(p.id);
   const rescued = unlockedDogs(p);
-  const todayDogs = todayUnlockedDogs(p);
-  const todayNames = new Set(todayDogs.map(x=>x.name));
+
   return `
     <div class="card">
       <div class="pet-head">
         <h3 style="margin:0">小狗乐园</h3>
-        <small>奇怪小狗名单 · 共 ${DOG_BREEDS.length} 只</small>
+        <small>随机获得 · 共 ${DOG_BREEDS.length} 只</small>
       </div>
+
       <div class="pet-tabs">
         <button class="${tab==="park"?"active":""}" onclick="setDogTab('${p.id}','park')">狗狗公园</button>
         <button class="${tab==="rescue"?"active":""}" onclick="setDogTab('${p.id}','rescue')">待拯救的小狗</button>
       </div>
+
       ${tab==="park" ? `
         <div class="park-summary">
-          <div class="park-chip"><b>${rescued.length}</b><span>公园入住小狗</span></div>
-          <div class="park-chip"><b>${todayUnlockedCount(p)}</b><span>今日新解锁</span></div>
-          <div class="park-chip"><b>${todaySessionCount(p)}</b><span>今日完成番茄</span></div>
+          <div class="park-chip"><b>${rescued.length}</b><span>已入住公园</span></div>
+          <div class="park-chip"><b>${dailySessions(p).length}</b><span>所选日期番茄</span></div>
+          <div class="park-chip"><b>${dailyCompletedTasks(p)}</b><span>所选日期完成任务</span></div>
         </div>
+
         <div class="park-scene">
           <div class="sun"></div>
           <div class="cloud c1"></div>
@@ -629,23 +689,33 @@ function renderDogZone(p){
           <div class="bench"></div>
           <div class="path"></div>
           <div class="paw-trail"><span class="paw p1">🐾</span><span class="paw p2">🐾</span><span class="paw p3">🐾</span><span class="paw p4">🐾</span><span class="paw p5">🐾</span></div>
+
           <div class="park-banner">
-            <div><div class="title">狗狗公园</div><div class="hint">没有头像，只有名字离谱的小狗在这里玩</div></div>
+            <div>
+              <div class="title">狗狗公园</div>
+              <div class="hint">每次解锁会从剩余名字中随机获得一只</div>
+            </div>
             <div class="hint">${rescued.length}/${DOG_BREEDS.length} 已入住</div>
           </div>
-          ${rescued.length ? `<div class="park-list">${rescued.map((dog,index)=>parkDogCard(dog,index,todayNames.has(dog.name))).join("")}</div>` : `<div class="park-empty"><div><div style="font-size:40px">🌳</div><div style="font-weight:700;margin-top:8px">公园还没有小狗入住</div><div style="margin-top:6px">${nextRewardText(p)}</div></div></div>`}
-        </div>
-        <div class="today-strip">
-          ${todayDogs.length ? todayDogs.map(d=>`<span class="today-pill">今日收集：${h(d.name)}</span>`).join("") : `<span class="today-pill">今日还没有新收集到小狗</span>`}
+
+          ${rescued.length
+            ? `<div class="park-list">${rescued.map((dog,index)=>parkDogCard(dog,index)).join("")}</div>`
+            : `<div class="park-empty"><div><div style="font-size:40px">🌳</div><div style="font-weight:700;margin-top:8px">公园还没有小狗入住</div><div style="margin-top:6px">${nextRewardText(p)}</div></div></div>`
+          }
         </div>
       ` : `
-        <div class="rescue-legend"><span>已救助：${rescued.length} 只</span><span>待拯救：${DOG_BREEDS.length-rescued.length} 只</span></div>
+        <div class="rescue-legend">
+          <span>已救助：${rescued.length} 只</span>
+          <span>待拯救：${DOG_BREEDS.length-rescued.length} 只</span>
+        </div>
+
         <div class="rescue-grid">
-          ${DOG_BREEDS.map((dog,index)=>{
-            const ok = index < rescued.length;
+          ${DOG_BREEDS.map(dog=>{
+            const ok = rescued.some(x=>x.name===dog.name);
             return `<div class="rescue-name ${ok?"unlocked":"locked"}" title="${ok?'已救助':'待拯救'}">${h(dog.name)}<div class="status">${ok?'已救助':'待拯救'}</div></div>`;
           }).join("")}
         </div>
+
         <div class="milestone">${nextRewardText(p)}</div>
       `}
     </div>
@@ -656,7 +726,8 @@ function userHTML(p){
   const t = timerFor(p);
   const total = (t.mode==="focus" ? (p.focus_minutes||25) : (p.break_minutes||5))*60;
   const pct = total ? (1 - t.remaining/total) * 100 : 0;
-  const myTasks = tasks.filter(x=>x.profile_id===p.id);
+  const day = workDateFor(p.id);
+  const myTasks = tasks.filter(x=>x.profile_id===p.id && taskDateOf(x)===day);
   return `
     <section class="user">
       <div class="user-head">
@@ -665,6 +736,11 @@ function userHTML(p){
           <div class="name-wrap">
             <input value="${h(p.display_name)}" onchange="renameUser('${p.id}',this.value)" aria-label="用户名">
             <div class="sub">${p.slot==="A"?"左侧用户":"右侧用户"} · 云端共享</div>
+            <div class="task-meta" style="margin-top:7px">
+              <span>当前工作日期</span>
+              <input type="date" value="${day}" onchange="setWorkDate('${p.id}',this.value)">
+              <span>${h(deviceTimeZone())}</span>
+            </div>
           </div>
         </div>
         <button onclick="cycleAvatar('${p.id}')">换头像</button>
@@ -690,9 +766,9 @@ function userHTML(p){
         <div class="card">
           <h3>学习统计</h3>
           <div class="stats">
-            <div class="stat"><b>${p.completed_sessions||0}</b><span>完成番茄</span></div>
-            <div class="stat"><b>${p.focused_minutes||0}</b><span>专注分钟</span></div>
-            <div class="stat"><b>${totalUnlockedDogs(p)}</b><span>已救助小狗</span></div>
+            <div class="stat"><b>${dailySessions(p).length}</b><span>当天番茄</span></div>
+            <div class="stat"><b>${dailyFocusMinutes(p)}</b><span>当天专注分钟</span></div>
+            <div class="stat"><b>${dailyCompletedTasks(p)}</b><span>当天完成任务</span></div>
           </div>
           <div class="milestone">${nextRewardText(p)}</div>
           <div class="preset-row" style="justify-content:flex-start">
@@ -704,11 +780,6 @@ function userHTML(p){
           <div class="task-form">
             <input id="task-input-${p.id}" placeholder="例如：背单词 30 个" onkeydown="if(event.key==='Enter')addTask('${p.id}')">
             <button class="primary" onclick="addTask('${p.id}')">添加</button>
-          </div>
-          <div class="task-meta">
-            <span>任务日期</span>
-            <input id="task-date-${p.id}" type="date" value="${dateInTimeZone()}">
-            <span>时区：${h(deviceTimeZone())}</span>
           </div>
           <div class="task-list">
             ${myTasks.length ? myTasks.map(x=>`<div class="task ${x.completed?"done":""}"><input type="checkbox" ${x.completed?"checked":""} onchange="toggleTask('${x.id}',${!x.completed})"><div class="task-text">${h(x.text)}</div><small>${x.completed?"完成":"进行中"}</small><button onclick="deleteTask('${x.id}')">删除</button></div>`).join("") : `<div class="sub">还没有任务。添加一个学习任务。</div>`}
@@ -780,7 +851,13 @@ async function completeRound(id){
   t.running = false; t.endAt = null;
   if(wasFocus){
     const minutes = p.focus_minutes||25;
-    const {error:sErr} = await db.from("pomodoro_sessions").insert({ room_id:p.room_id, profile_id:p.id, duration_minutes:minutes });
+    const selectedDate = workDateFor(p.id);
+    const {error:sErr} = await db.from("pomodoro_sessions").insert({
+      room_id:p.room_id,
+      profile_id:p.id,
+      duration_minutes:minutes,
+      session_date:selectedDate
+    });
     if(sErr){ toast("保存番茄记录失败："+sErr.message); return; }
     const {error:pErr} = await db.from("profiles").update({ completed_sessions:(p.completed_sessions||0)+1, focused_minutes:(p.focused_minutes||0)+minutes }).eq("id",p.id);
     if(pErr){ toast("更新统计失败："+pErr.message); return; }
@@ -789,7 +866,7 @@ async function completeRound(id){
       action:"add_focus_minutes",
       slot:p.slot,
       minutes,
-      target_date:dateInTimeZone(),
+      target_date:selectedDate,
       timezone:deviceTimeZone()
     });
 
@@ -824,11 +901,10 @@ async function setRewardEvery(id,value){
 async function addTask(profileId){
   const p = profileById(profileId);
   const input = document.getElementById(`task-input-${profileId}`);
-  const dateInput = document.getElementById(`task-date-${profileId}`);
   const text = input.value.trim();
   if(!text) return;
 
-  const targetDate = dateInput?.value || dateInTimeZone();
+  const targetDate = workDateFor(profileId);
   const timezone = deviceTimeZone();
 
   input.value = "";
@@ -836,7 +912,8 @@ async function addTask(profileId){
   const {error} = await db.from("tasks").insert({
     room_id:p.room_id,
     profile_id:p.id,
-    text
+    text,
+    task_date:targetDate
   });
 
   if(error){
