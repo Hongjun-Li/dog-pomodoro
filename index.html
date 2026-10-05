@@ -91,6 +91,8 @@
     .task-text{flex:1;min-width:0;overflow-wrap:anywhere}
     .task small{color:var(--muted)}
     .task button{padding:5px 8px;border-radius:8px;font-size:12px}
+    .task-actions{display:flex;gap:5px;flex-wrap:wrap}
+    .task-actions button{padding:5px 8px;border-radius:8px;font-size:12px}
     .milestone{margin-top:10px;padding:10px 12px;border-radius:12px;background:#fff7d8;border:1px solid #f1dfa4;font-size:13px}
 
     .pet-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
@@ -322,7 +324,7 @@
   </div>
 
   <div id="footer" class="footer-note" style="display:none">
-    当前工作日期决定任务、番茄和当天统计；历史不会删除。任务与番茄记录保存在 Supabase，并同步到对应月份的 Notion。
+    任务先只保存在 Supabase；只有勾选完成后才同步到 Notion。编辑、取消完成或删除已完成任务时，Notion 会同步更新。
   </div>
 </div>
 
@@ -376,6 +378,7 @@ let sessions = [];
 let timers = {};
 let petTabs = {};
 let workDates = {};
+let taskDrafts = {};
 let realtimeChannel = null;
 let refreshTimer = null;
 
@@ -648,6 +651,33 @@ async function syncNotion(body){
   }
 }
 
+async function syncCompletedTasks(profileId, targetDate){
+  const p = profileById(profileId);
+  if(!p) return {ok:false};
+
+  const {data,error} = await db
+    .from("tasks")
+    .select("id,text,completed,task_date")
+    .eq("profile_id", profileId)
+    .eq("task_date", targetDate)
+    .eq("completed", true)
+    .order("created_at",{ascending:true});
+
+  if(error){
+    console.error("读取已完成任务失败:", error);
+    toast("任务已保存，但读取完成列表失败");
+    return {ok:false,error};
+  }
+
+  return await syncNotion({
+    action:"sync_completed_tasks",
+    slot:p.slot,
+    tasks:(data||[]).map(x=>x.text),
+    target_date:targetDate,
+    timezone:deviceTimeZone()
+  });
+}
+
 function parkDogCard(dog,index){
   return `
     <div class="name-dog">
@@ -778,11 +808,27 @@ function userHTML(p){
         <div class="card">
           <h3>学习任务</h3>
           <div class="task-form">
-            <input id="task-input-${p.id}" placeholder="例如：背单词 30 个" onkeydown="if(event.key==='Enter')addTask('${p.id}')">
+            <input
+              id="task-input-${p.id}"
+              value="${h(taskDrafts[p.id]||"")}"
+              placeholder="写完后点击右侧“添加”"
+              oninput="taskDrafts['${p.id}']=this.value"
+              autocomplete="off"
+            >
             <button class="primary" onclick="addTask('${p.id}')">添加</button>
           </div>
           <div class="task-list">
-            ${myTasks.length ? myTasks.map(x=>`<div class="task ${x.completed?"done":""}"><input type="checkbox" ${x.completed?"checked":""} onchange="toggleTask('${x.id}',${!x.completed})"><div class="task-text">${h(x.text)}</div><small>${x.completed?"完成":"进行中"}</small><button onclick="deleteTask('${x.id}')">删除</button></div>`).join("") : `<div class="sub">还没有任务。添加一个学习任务。</div>`}
+            ${myTasks.length ? myTasks.map(x=>`
+              <div class="task ${x.completed?"done":""}">
+                <input type="checkbox" ${x.completed?"checked":""} onchange="toggleTask('${x.id}',${!x.completed})">
+                <div class="task-text">${h(x.text)}</div>
+                <small>${x.completed?"已完成":"进行中"}</small>
+                <div class="task-actions">
+                  <button onclick="editTask('${x.id}')">编辑</button>
+                  <button onclick="deleteTask('${x.id}')">删除</button>
+                </div>
+              </div>
+            `).join("") : `<div class="sub">还没有任务。写完后点击“添加”。只有勾选完成的任务才会同步到 Notion。</div>`}
           </div>
         </div>
         ${renderDogZone(p)}
@@ -792,7 +838,24 @@ function userHTML(p){
 }
 
 function render(){
-  document.getElementById("board").innerHTML = profiles.length ? profiles.map(userHTML).join("") : `<div class="loading">房间里没有找到用户。</div>`;
+  const active = document.activeElement;
+  const activeId = active?.id || "";
+  const selectionStart = typeof active?.selectionStart === "number" ? active.selectionStart : null;
+  const selectionEnd = typeof active?.selectionEnd === "number" ? active.selectionEnd : null;
+
+  document.getElementById("board").innerHTML =
+    profiles.length ? profiles.map(userHTML).join("") : `<div class="loading">房间里没有找到用户。</div>`;
+
+  if(activeId){
+    const next = document.getElementById(activeId);
+    if(next){
+      next.focus({preventScroll:true});
+      if(selectionStart !== null && typeof next.setSelectionRange === "function"){
+        try{ next.setSelectionRange(selectionStart, selectionEnd); }catch(e){}
+      }
+    }
+  }
+
   updateDynamic();
 }
 
@@ -901,13 +964,10 @@ async function setRewardEvery(id,value){
 async function addTask(profileId){
   const p = profileById(profileId);
   const input = document.getElementById(`task-input-${profileId}`);
-  const text = input.value.trim();
+  const text = (taskDrafts[profileId] ?? input?.value ?? "").trim();
   if(!text) return;
 
   const targetDate = workDateFor(profileId);
-  const timezone = deviceTimeZone();
-
-  input.value = "";
 
   const {error} = await db.from("tasks").insert({
     room_id:p.room_id,
@@ -921,29 +981,92 @@ async function addTask(profileId){
     return;
   }
 
-  const notion = await syncNotion({
-    action:"add_task",
-    slot:p.slot,
-    task:text,
-    target_date:targetDate,
-    timezone
-  });
+  taskDrafts[profileId] = "";
+  toast("任务已加入列表；勾选完成后才会同步到 Notion");
+  await loadAll();
+}
 
-  if(notion.ok){
-    toast("任务已保存，并同步到 Notion");
+async function toggleTask(taskId,completed){
+  const task = tasks.find(x=>x.id===taskId);
+  if(!task) return;
+
+  const {error} = await db.from("tasks").update({completed}).eq("id",taskId);
+  if(error){
+    toast("更新任务失败："+error.message);
+    return;
+  }
+
+  task.completed = completed;
+  render();
+
+  const result = await syncCompletedTasks(task.profile_id, taskDateOf(task));
+  if(result?.ok){
+    toast(completed ? "已完成，并同步到 Notion" : "已取消完成，Notion 已同步");
   }
 
   await loadAll();
 }
 
-async function toggleTask(taskId,completed){
-  const {error} = await db.from("tasks").update({completed}).eq("id",taskId);
-  if(error) toast("更新任务失败："+error.message); else await loadAll();
+async function editTask(taskId){
+  const task = tasks.find(x=>x.id===taskId);
+  if(!task) return;
+
+  const next = window.prompt("编辑任务", task.text);
+  if(next === null) return;
+
+  const text = next.trim();
+  if(!text){
+    toast("任务内容不能为空");
+    return;
+  }
+  if(text === task.text) return;
+
+  const {error} = await db.from("tasks").update({text}).eq("id",taskId);
+  if(error){
+    toast("编辑任务失败："+error.message);
+    return;
+  }
+
+  task.text = text;
+  render();
+
+  if(task.completed){
+    const result = await syncCompletedTasks(task.profile_id, taskDateOf(task));
+    if(result?.ok) toast("任务已编辑，Notion 已同步");
+  }else{
+    toast("任务已编辑");
+  }
+
+  await loadAll();
 }
 
 async function deleteTask(taskId){
+  const task = tasks.find(x=>x.id===taskId);
+  if(!task) return;
+
+  if(!window.confirm(`删除任务“${task.text}”？`)) return;
+
+  const wasCompleted = !!task.completed;
+  const profileId = task.profile_id;
+  const targetDate = taskDateOf(task);
+
   const {error} = await db.from("tasks").delete().eq("id",taskId);
-  if(error) toast("删除任务失败："+error.message); else await loadAll();
+  if(error){
+    toast("删除任务失败："+error.message);
+    return;
+  }
+
+  tasks = tasks.filter(x=>x.id!==taskId);
+  render();
+
+  if(wasCompleted){
+    const result = await syncCompletedTasks(profileId, targetDate);
+    if(result?.ok) toast("任务已删除，Notion 已同步");
+  }else{
+    toast("任务已删除");
+  }
+
+  await loadAll();
 }
 
 function updateDynamic(){
